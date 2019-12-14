@@ -1,5 +1,7 @@
 {
   "name": "yadadebate",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

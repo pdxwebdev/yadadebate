@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>communities</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher (ionRefresh)="refresh($event)" slot="fixed">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-spinner *ngIf="loading"></ion-spinner>
+  <ion-card *ngIf="items && items.length == 0">
+      No items to display.
+  </ion-card>
+  <ion-list>
+    <ion-item button *ngFor="let item of items" (click)="itemTapped($event, item)">
+      <span>{{item.transaction.relationship.their_username}}</span>
+    </ion-item>
+  </ion-list>
+</ion-content>

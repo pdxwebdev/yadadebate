@@ -17,9 +17,19 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
+      title: 'Communities',
+      url: '/communities',
+      icon: 'people'
+    },
+    {
+      title: 'Friends',
+      url: '/friends',
+      icon: 'person'
+    },
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: 'settings'
     }
   ];
 

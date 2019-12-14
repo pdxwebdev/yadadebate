@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher (ionRefresh)="refresh($event)" slot="fixed">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <h3>Identities</h3>
+  <button ion-button secondary (click)="createKey()">Create</button>
+  <button ion-button secondary (click)="importKey()">Import</button>
+  <ion-list>
+    <ion-item button (click)="selectIdentity(key.username)" *ngFor="let key of keys">
+      {{key.username}}
+    </ion-item>
+  </ion-list>
+</ion-content>
