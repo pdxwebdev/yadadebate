@@ -1,0 +1,6 @@
+<ion-segment color="danger" scrollable (click)="segmentChanged($event, item)" [(ngModel)]="item.vote">
+  <ion-segment-button layout="icon-end" value="upvote">
+    <ion-icon name="heart"></ion-icon>
+    <ion-label>{{votes[item.id]}}</ion-label>
+  </ion-segment-button>
+</ion-segment>

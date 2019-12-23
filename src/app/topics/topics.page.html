@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>communities</ion-title>
+    <ion-title>topics</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,10 +13,10 @@
     <ng-container *ngFor="let static_group of settingsService.static_groups">
       <h1>{{static_group.relationship.their_username}}</h1>
       <app-post-button [staticGroup]="static_group"></app-post-button>
-      <app-group-card-list
+      <app-topic-card-list
         [rootGroup]="rootGroup"
-        *ngFor="let rootGroup of groups[static_group.rid]"
-      ></app-group-card-list>
+        *ngFor="let rootGroup of topicGroups[static_group.rid]"
+      ></app-topic-card-list>
     </ng-container>
   </ion-list>
 </ion-content>

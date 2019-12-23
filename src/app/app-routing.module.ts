@@ -4,12 +4,8 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'identity',
     pathMatch: 'full'
-  },
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: 'communities',
@@ -20,8 +16,12 @@ const routes: Routes = [
     loadChildren: () => import('./friends/friends.module').then( m => m.FriendsPageModule)
   },
   {
-    path: 'settings',
+    path: 'identity',
     loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
+  },
+  {
+    path: 'topics',
+    loadChildren: () => import('./topics/topics.module').then( m => m.TopicsPageModule)
   }
 ];
 

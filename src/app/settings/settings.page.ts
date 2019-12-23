@@ -13,7 +13,6 @@ import { BulletinSecretService } from '../yadalib/bulletin-secret.service';
 import { FirebaseService } from '../yadalib/firebase.service';
 import { GraphService } from '../yadalib/graph.service';
 import { WalletService } from '../yadalib/wallet.service';
-import { HomePage } from '../home/home.page';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
@@ -115,7 +114,7 @@ export class SettingsPage implements OnInit {
             })
             .then(() => {
                 if (favorites.length == 0) {
-                    var host = 'http://0.0.0.0:8000';
+                    var host = 'http://0.0.0.0:5000';
                     this.storage.set('favorites-Home', host);
                     this.storage.set('node', host);
                     favorites.push({label: 'Home', url: host});
@@ -173,6 +172,71 @@ export class SettingsPage implements OnInit {
                 return 0
             });
             this.keys = newKeys;
+        });
+    }
+
+    async signinCode() {
+        new Promise(async (resolve, reject) => {
+            let alert = await this.alertCtrl.create({
+                header: 'Paste signin code',
+                inputs: [
+                {
+                    name: 'signinCode',
+                    placeholder: 'Signin code'
+                }
+                ],
+                buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: data => {
+                        console.log('Cancel clicked');
+                        reject();
+                    }
+                },
+                {
+                    text: 'Sign in',
+                    handler: async data => {
+                        resolve(data.signinCode);
+                    }
+                }
+                ]
+            });
+            await alert.present();
+        })
+        .then((signinCode) => {
+          return new Promise((resolve, reject) => {
+            return this.ahttp.post(this.settingsService.remoteSettings.baseUrl + '/rmfa', {
+              origin: window.location.origin,
+              signin_code: signinCode
+            })
+            .subscribe((data) => {
+              resolve(data);
+            });
+          })
+        })
+        .then(async (auth: any) => {
+            if (auth.authenticated) {
+              const toast = await this.toastCtrl.create({
+                  message: 'Signin successful!',
+                  duration: 2000
+              });
+              await toast.present();
+              return this.refresh(null);
+            } else {
+              const toast = await this.toastCtrl.create({
+                  message: 'Signin failed',
+                  duration: 2000
+              });
+              await toast.present();
+            }
+        })
+        .catch(async () => {
+            const toast = await this.toastCtrl.create({
+                message: 'Error importing identity!',
+                duration: 2000
+            });
+            await toast.present();
         });
     }
 
@@ -305,14 +369,11 @@ export class SettingsPage implements OnInit {
         .then(() => {
             return this.refresh(null);
         })
-        .then(() => {
-            return this.unlockWallet();
-        })
         .then(() => { 
             this.loadingModal.dismiss();
         })
         .then(() => {
-            this.navCtrl.navigateRoot('/home');
+            this.navCtrl.navigateRoot('/topics');
         })
         .catch((err)  => {
             this.loadingModal.dismiss();  

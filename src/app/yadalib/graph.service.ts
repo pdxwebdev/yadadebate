@@ -207,6 +207,12 @@ export class GraphService {
                         continue
                     }
                     if(used_rids.indexOf(item.rid) === -1) {
+                        try {
+                            item.relationship.their_username.toLowerCase()
+                        }
+                        catch {
+                            continue;
+                        }
                         list.push(item);
                         used_rids.push(item.rid);
                     }
@@ -222,6 +228,12 @@ export class GraphService {
                 // now add everyone else
                 for (var i=0; i < this.graph[listType].length; i++) {
                     if (data.used_rids.indexOf(this.graph[listType][i].rid) === -1) {
+                        try {
+                            this.graph[listType][i].relationship.their_username.toLowerCase()
+                        }
+                        catch {
+                            continue;
+                        }
                         data.list.push(this.graph[listType][i]);
                         data.used_rids.push(this.graph[listType][i].rid);
                     }
@@ -251,6 +263,22 @@ export class GraphService {
             }).then((groups) => {
                 this.getGroupsRequestsError = false;
                 this.graph.groups = groups;
+                resolve();
+            }).catch((err) => {
+                this.getGroupsRequestsError = true;
+                reject(null);
+            });
+        });
+    }
+
+    getTopics() {
+        return new Promise((resolve, reject) => {
+            this.endpointRequest('get-graph-sent-friend-requests')
+            .then((data: any) => {
+                return this.parseGroups(data.sent_friend_requests, 'topic');
+            }).then((topics) => {
+                this.getGroupsRequestsError = false;
+                this.graph.topics = topics;
                 resolve();
             }).catch((err) => {
                 this.getGroupsRequestsError = true;
@@ -648,7 +676,7 @@ export class GraphService {
         });
     }
 
-    parseGroups(groups) {
+    parseGroups(groups, groupType='group') {
         // we must call getSentFriendRequests and getFriendRequests before getting here
         // because we need this.keys to be populated with the dh_public_keys and dh_private_keys from the requests
         // though friends really should be cached
@@ -656,7 +684,7 @@ export class GraphService {
         return new Promise((resolve, reject) => {
             //start "just do dedup yada server because yada server adds itself to the friends array automatically straight from the api"
             var groupsObj = {};
-            if (!this.graph.groups) this.graph.groups = [];
+            if (!this.graph[groupType + 's']) this.graph[groupType + 's'] = [];
             for(var i=0; i<groups.length; i++) {
                 var group = groups[i];
                 if (!this.keys[group.rid]) {
@@ -678,7 +706,7 @@ export class GraphService {
                         relationship = JSON.parse(decrypted);
                         group['relationship'] = relationship;
                     }
-                    if (!group.relationship.group) {
+                    if (!group.relationship[groupType]) {
                         continue;
                     }
                     groupsObj[group.rid] = group;
@@ -836,7 +864,7 @@ export class GraphService {
                         continue;
                     }
 
-                    var group_message_rid = message.requested_rid || message.rid;
+                    var group_message_rid = message.rid;
                     if(messageJson[messageType[0]] || messageJson[messageType[1]]) {
                         message.relationship = messageJson;
                         message.username = this.usernames[group_message_rid];

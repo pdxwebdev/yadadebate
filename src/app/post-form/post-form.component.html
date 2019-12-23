@@ -1,0 +1,5 @@
+<textarea [mentionConfig]="mentionConfig" (searchTerm)="search($event)" (selectedTerm)="select($event, ahttp)" [(ngModel)]="groupChatText"></textarea>
+<div *ngIf="group">Selected group: {{group.relationship.their_username}}</div>
+<div *ngIf="mention">Selected mention: {{mention.relationship.their_username}}</div>
+<div *ngIf="topic">Selected topic: {{topic.relationship.their_username}}</div>
+<ion-item button (click)="submit()">Submit</ion-item>

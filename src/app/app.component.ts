@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
+import { Platform, ModalController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -12,9 +12,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 export class AppComponent {
   public appPages = [
     {
-      title: 'Home',
-      url: '/home',
-      icon: 'home'
+      title: 'Topics',
+      url: '/topics',
+      icon: 'quote'
     },
     {
       title: 'Communities',
@@ -27,9 +27,9 @@ export class AppComponent {
       icon: 'person'
     },
     {
-      title: 'Settings',
-      url: '/settings',
-      icon: 'settings'
+      title: 'Identity',
+      url: '/identity',
+      icon: 'lock'
     }
   ];
 

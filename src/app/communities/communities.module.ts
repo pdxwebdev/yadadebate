@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -8,13 +7,19 @@ import { CommunitiesPageRoutingModule } from './communities-routing.module';
 
 import { CommunitiesPage } from './communities.page';
 
+import { GroupCardListComponent } from '../group-card-list/group-card-list.component';
+import { SharedModule } from '../shared.module';
+
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     IonicModule,
-    CommunitiesPageRoutingModule
+    CommunitiesPageRoutingModule,
+    SharedModule
   ],
-  declarations: [CommunitiesPage]
+  declarations: [
+    CommunitiesPage,
+    GroupCardListComponent
+  ]
 })
 export class CommunitiesPageModule {}
