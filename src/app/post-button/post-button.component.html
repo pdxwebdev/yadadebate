@@ -1,3 +1,6 @@
-<ion-item button (click)="modal()" color="primary">
+<ion-item button (click)="modal()" color="primary" *ngIf="!post">
   <ion-icon name="create" primary></ion-icon> Create {{staticGroup.relationship.their_username.toLowerCase()}} post
+</ion-item>
+<ion-item button (click)="modal()" color="primary" *ngIf="post">
+  <ion-icon name="create" primary></ion-icon> Reply
 </ion-item>

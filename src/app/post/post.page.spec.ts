@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { GroupCardListComponent } from './group-card-list.component';
+import { PostPage } from './post.page';
 
-describe('GroupCardListComponent', () => {
-  let component: GroupCardListComponent;
-  let fixture: ComponentFixture<GroupCardListComponent>;
+describe('PostPage', () => {
+  let component: PostPage;
+  let fixture: ComponentFixture<PostPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GroupCardListComponent ],
+      declarations: [ PostPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GroupCardListComponent);
+    fixture = TestBed.createComponent(PostPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

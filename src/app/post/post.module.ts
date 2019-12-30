@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TopicsPageRoutingModule } from './topics-routing.module';
+import { PostPageRoutingModule } from './post-routing.module';
 
-import { TopicsPage } from './topics.page';
+import { PostPage } from './post.page';
 import { SharedModule } from '../shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     IonicModule,
-    TopicsPageRoutingModule,
-    SharedModule
+    SharedModule,
+    PostPageRoutingModule
   ],
-  declarations: [
-    TopicsPage
-  ]
+  declarations: [PostPage]
 })
-export class TopicsPageModule {}
+export class PostPageModule {}

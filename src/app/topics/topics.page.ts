@@ -27,7 +27,7 @@ export class TopicsPage implements OnInit {
   groupSelectForm: any;
   selectedTopic: any;
   topicGroups: any;
-  votes: any;
+  thisComponent: any;
   constructor(
     private settingsService: SettingsService,
     private transactionService: TransactionService,
@@ -37,6 +37,7 @@ export class TopicsPage implements OnInit {
     private navCtrl: NavController
   ) { 
     this.topicGroups = {};
+    this.thisComponent = this;
   }
 
   ngOnInit() {
@@ -47,7 +48,7 @@ export class TopicsPage implements OnInit {
         for(var i=0; i < this.settingsService.static_groups.length; i++) {
             var group = this.settingsService.static_groups[i];
             promises.push(new Promise((resolve, reject) => {
-                this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requested_rid=' + group.rid + '&id_type=topic&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+                this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + group.rid + '&id_type=topic&bulletin_secret=' + group.relationship.their_bulletin_secret)
                 .subscribe((data) => {
                     return resolve({group: group, data: data});
                 });

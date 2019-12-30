@@ -31,6 +31,46 @@ export class GroupService {
     private toastCtrl: ToastController
   ) { }
 
+  createRootGroup(groupName) {
+      this.groupName = groupName;
+      return new Promise((resolve, reject) => {
+          let key = foobar.bitcoin.ECPair.makeRandom();
+          let wif = key.toWIF();
+          let pubKey = key.getPublicKeyBuffer().toString('hex');
+          let address = key.getAddress();
+          let bulletin_secret = foobar.base64.fromByteArray(key.sign(foobar.bitcoin.crypto.sha256(this.groupName)).toDER());
+          var raw_dh_private_key = window.crypto.getRandomValues(new Uint8Array(32));
+          var raw_dh_public_key = X25519.getPublic(raw_dh_private_key);
+          var dh_private_key = this.toHex(raw_dh_private_key);
+          var dh_public_key = this.toHex(raw_dh_public_key);
+
+          //root topic is creating the group and creating a relationship with it
+          var bulletin_secrets = [bulletin_secret, this.graphService.graph.bulletin_secret].sort(function (a, b) {
+              return a.toLowerCase().localeCompare(b.toLowerCase());
+          });
+          var rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
+  
+          let info: any = {
+              their_public_key: pubKey,
+              their_address: address,
+              their_bulletin_secret: bulletin_secret,
+              their_username: this.groupName,
+              my_bulletin_secret: this.graphService.graph.bulletin_secret,
+              my_username: this.graphService.graph.username,
+              wif: wif,
+              dh_public_key: dh_public_key,
+              dh_private_key: dh_private_key,
+              rid: rid,
+              group: true
+          };
+
+          return resolve(info);
+      })
+      .then((info) => {
+          return this.createGroupWorker(info);
+      });
+  }
+
   createGroup(parentGroup, groupName) {
       this.parentGroup = parentGroup;
       this.groupName = groupName;
@@ -45,93 +85,68 @@ export class GroupService {
           var dh_private_key = this.toHex(raw_dh_private_key);
           var dh_public_key = this.toHex(raw_dh_public_key);
   
+          //root topic is requesting the new group from yadacoin-regnet
           var bulletin_secrets = [this.graphService.graph.bulletin_secret, bulletin_secret].sort(function (a, b) {
               return a.toLowerCase().localeCompare(b.toLowerCase());
           });
           var requested_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
+
+          //root topic of yadacoin-regnet is requesting
+          var bulletin_secrets = [this.parentGroup.relationship.their_bulletin_secret, this.graphService.graph.bulletin_secret].sort(function (a, b) {
+              return a.toLowerCase().localeCompare(b.toLowerCase());
+          });
+          var requester_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
+
+          //root topic is creating the group and creating a relationship with it
+          var bulletin_secrets = [bulletin_secret, this.parentGroup.relationship.their_bulletin_secret].sort(function (a, b) {
+              return a.toLowerCase().localeCompare(b.toLowerCase());
+          });
+          var rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
   
           let info: any = {
               their_public_key: pubKey,
               their_address: address,
               their_bulletin_secret: bulletin_secret,
               their_username: this.groupName,
-              my_bulletin_secret: this.bulletinSecretService.generate_bulletin_secret(),
-              my_username: this.bulletinSecretService.username,
+              my_bulletin_secret: this.parentGroup.relationship.their_bulletin_secret,
+              my_username: this.parentGroup.relationship.their_username,
               wif: wif,
               dh_public_key: dh_public_key,
               dh_private_key: dh_private_key,
               requested_rid: requested_rid,
+              requester_rid: requester_rid,
+              rid: rid,
               group: true
           };
-          this.firstInfo = info;
 
           return resolve(info);
       })
       .then((info) => {
           return this.createGroupWorker(info);
-      })
-      .then((info: any) => {
-        return new Promise((resolve, reject) => {
-          var raw_dh_private_key = window.crypto.getRandomValues(new Uint8Array(32));
-          var raw_dh_public_key = X25519.getPublic(raw_dh_private_key);
-          var dh_private_key2 = this.toHex(raw_dh_private_key);
-          var dh_public_key2 = this.toHex(raw_dh_public_key);
-
-          var bulletin_secrets = [this.graphService.graph.bulletin_secret, this.parentGroup.relationship.their_bulletin_secret].sort(function (a, b) {
-              return a.toLowerCase().localeCompare(b.toLowerCase());
-          });
-          var requested_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
-
-          var bulletin_secrets = [info.relationship.their_bulletin_secret, this.graphService.graph.bulletin_secret].sort(function (a, b) {
-              return a.toLowerCase().localeCompare(b.toLowerCase());
-          });
-          var requester_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
-
-          var bulletin_secrets = [info.relationship.their_bulletin_secret, this.parentGroup.relationship.their_bulletin_secret].sort(function (a, b) {
-              return a.toLowerCase().localeCompare(b.toLowerCase());
-          });
-          var rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
-
-          info = {
-              their_bulletin_secret: this.parentGroup.relationship.their_bulletin_secret,
-              their_username: this.parentGroup.relationship.their_username,
-              my_bulletin_secret: info.relationship.their_bulletin_secret,
-              my_username: this.groupName,
-              dh_public_key: dh_public_key2,
-              dh_private_key: dh_private_key2,
-              requested_rid: this.parentGroup.rid,
-              requester_rid: requester_rid,
-              rid: rid,
-              group: true
-          };
-          resolve(info);
-        });
-      })
-      .then((info) => {
-        return this.createGroupWorker(info);
-      })
+      });
   }
 
   createGroupWorker(info: any) {
     return new Promise((resolve, reject) => {
-      return this.transactionService.generateTransaction({
-          relationship: {
-              dh_private_key: info.dh_private_key,
-              their_bulletin_secret: info.their_bulletin_secret,
-              their_public_key: info.their_public_key,
-              their_username: info.their_username,
-              their_address: info.their_address,
-              my_bulletin_secret: info.my_bulletin_secret ,
-              my_username: info.my_username,
-              wif: info.wif,
-              group: info.group
-          },
-          dh_public_key: info.dh_public_key,
-          to: info.their_address,
-          requester_rid: this.graphService.graph.rid,
-          requested_rid: info.requested_rid,
-          rid: info.rid
-      }).then((txn) => {
+        this.firstInfo = {
+            relationship: {
+                dh_private_key: info.dh_private_key,
+                their_bulletin_secret: info.their_bulletin_secret,
+                their_public_key: info.their_public_key,
+                their_username: info.their_username,
+                their_address: info.their_address,
+                my_bulletin_secret: info.my_bulletin_secret ,
+                my_username: info.my_username,
+                wif: info.wif,
+                group: info.group
+            },
+            dh_public_key: info.dh_public_key,
+            to: info.their_address,
+            requester_rid: info.requester_rid,
+            requested_rid: info.requested_rid,
+            rid: info.rid
+        }
+      return this.transactionService.generateTransaction(this.firstInfo).then((txn) => {
           return this.transactionService.sendTransaction();
       }).then((txn) => {
           return new Promise((resolve, reject) => {
@@ -155,7 +170,7 @@ export class GroupService {
                   }
               })
               .subscribe((res) => {
-                return resolve({relationship: this.firstInfo});
+                return resolve(this.firstInfo);
               });
           })
       })

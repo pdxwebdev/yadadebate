@@ -9,7 +9,11 @@ import { PostFormComponent } from '../post-form/post-form.component';
   styleUrls: ['./post-button.component.scss'],
 })
 export class PostButtonComponent implements OnInit {
+  @Input() parentComponent;
   @Input() staticGroup;
+  @Input() group;
+  @Input() topic;
+  @Input() post;
   constructor(
     private modalCtrl: ModalController
   ) { }
@@ -20,7 +24,11 @@ export class PostButtonComponent implements OnInit {
     let modal = await this.modalCtrl.create({
       component: PostFormComponent,
       componentProps: {
-        parentGroup: this.staticGroup
+        parentComponent: this.parentComponent,
+        parentGroup: this.staticGroup,
+        group: this.group,
+        topic: this.topic,
+        post: this.post
       }
     });
     return await modal.present();

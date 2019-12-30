@@ -16,6 +16,7 @@ import { SettingsService } from '../yadalib/settings.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NavigationExtras } from '@angular/router';
 import { IonRadioGroup } from '@ionic/angular';
+import { GroupService } from '../group.service';
 
 declare var Base64;
 declare var foobar;
@@ -32,7 +33,7 @@ export class CommunitiesPage implements OnInit {
     @ViewChild('radioGroup', {static: false}) radioGroup: IonRadioGroup
     pageTitle: any;
     groupName: any;
-    parentGroup: any;
+    rootGroup: any;
     createForm: any;
     createTopicForm: any;
     groups: any;
@@ -50,7 +51,8 @@ export class CommunitiesPage implements OnInit {
         public ahttp: HttpClient,
         public modalCtrl: ModalController,
         public toastCtrl: ToastController,
-        public router: Router
+        public router: Router,
+        public groupService: GroupService
     ) {}
 
     ngOnInit() {
@@ -62,7 +64,7 @@ export class CommunitiesPage implements OnInit {
             for(var i=0; i < this.settingsService.static_groups.length; i++) {
                 var group = this.settingsService.static_groups[i];
                 promises.push(new Promise((resolve, reject) => {
-                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requested_rid=' + group.rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + group.rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
                     .subscribe((data) => {
                         return resolve({group: group, data: data});
                     });
@@ -118,7 +120,7 @@ export class CommunitiesPage implements OnInit {
     }
 
     groupAnswer(answer) {
-        this.parentGroup = answer.detail.value;
+        this.rootGroup = answer.detail.value;
     }
 
 }

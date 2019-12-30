@@ -31,14 +31,16 @@ export class VoteComponent implements OnInit {
   ngOnInit() {}
 
   async segmentChanged(ev: any, item: any) {
+    ev.preventDefault();
+    ev.stopPropagation();
     if (item.alreadyVoted === true) {
       const toast = await this.toastCtrl.create({
-          message: "Can't undo your vote.",
+          message: "Can't change your vote.",
           duration: 2000,
           position: 'bottom'
       });
       await toast.present();
-      return;
+      return false;
     }
     this.vote(item)
     .then(() => {
@@ -50,6 +52,7 @@ export class VoteComponent implements OnInit {
       item.prevVote = '';
       item.vote = '';
     });
+    return false;
   }
 
   async vote(item) {
@@ -77,6 +80,30 @@ export class VoteComponent implements OnInit {
                 this.walletService.get()
                 .then(() => {
                     return this.graphService.getFriends();
+                })
+                .then(() => {
+                    return new Promise((resolve, reject) => {
+                      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/topic-conflict?topic_bulletin_secret=' + item.relationship.topic_bulletin_secret + '&requested_rid=' + item.requested_rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+                      .subscribe((res: any) => {
+                        if(res.result) {
+                          reject("You've already identified with another group.");
+                        } else {
+                          resolve();
+                        }
+                      })
+                    })
+                })
+                .catch(async (err) => {
+                  return new Promise(async (resolve, reject) => {
+                    console.log(err); 
+                    let alert = await this.alertCtrl.create({
+                      header: 'Traitor',
+                      subHeader: err,
+                      buttons: ['OK']
+                    });
+                    await alert.present();
+                    reject();
+                  })
                 })
                 .then(() => {
                     return this.transactionService.generateTransaction({
@@ -110,11 +137,12 @@ export class VoteComponent implements OnInit {
                   });
                 }).then(() => {
                     this.groupChatText = '';
-                    this.parentComponent.ngOnInit();
+                    //this.parentComponent.ngOnInit();
                     resolve();
                 })
                 .catch(async (err) => {
                    console.log(err); 
+                   if(!err) return reject();
                    let alert = await this.alertCtrl.create({
                      header: 'Message error',
                      subHeader: err,

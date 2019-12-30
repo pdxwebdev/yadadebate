@@ -1,10 +1,10 @@
-<ion-list lines="none" *ngIf="topics && topics.length > 0">
+<ion-list lines="none" *ngIf="posts && posts.length > 0">
   <h1>{{rootGroup.transaction.relationship.their_username}}</h1>
-  <ion-row *ngFor="let topic of topics">
+  <ion-row *ngFor="let topic of posts">
     <div class="scrolling-wrapper-flexbox" scrollX="true">
       <div scrollX="true" direction="x" *ngFor="let item of topic.chats" class="card">
         <ion-col col-4>
-          <app-card cardType="topic" [item]="item" [votes]="votes" [topic]="topic" [parentComponent]="parentComponent"></app-card>
+          <app-card [cardType]="listType" [item]="item" [votes]="votes" [topic]="topic" [parentComponent]="parentComponent"></app-card>
         </ion-col>
       </div>
     </div>

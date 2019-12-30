@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SettingsService } from '../yadalib/settings.service';
 import { BulletinSecretService } from '../yadalib/bulletin-secret.service';
 import { HttpClient } from '@angular/common/http';
-import { ToastController, AlertController, NavController } from '@ionic/angular';
+import { ToastController, AlertController, NavController, ModalController } from '@ionic/angular';
 import { TopicService } from '../topic.service';
 import { GroupService } from '../group.service';
 import { WalletService } from '../yadalib/wallet.service';
@@ -16,11 +16,13 @@ import { GraphService } from '../yadalib/graph.service';
 })
 export class PostFormComponent implements OnInit {
   mentionConfig: any;
-  group: any;
-  topic: any;
+  @Input() parentComponent;
+  @Input() group;
+  @Input() topic;
   mention: any;
   groupChatText: any;
   @Input() parentGroup;
+  @Input() post
   constructor(
     private settingsService: SettingsService,
     private bulletinSecretService: BulletinSecretService,
@@ -32,10 +34,14 @@ export class PostFormComponent implements OnInit {
     private walletService: WalletService,
     private transactionService: TransactionService,
     private graphService: GraphService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
+      if(this.group && this.topic) {
+        this.groupChatText = ":" + this.group.relationship.their_username + " #" + this.topic.relationship.their_username + " ";
+      }
       this.mentionConfig = {
           mentions: [
               {
@@ -60,6 +66,10 @@ export class PostFormComponent implements OnInit {
       }
   }
 
+  async closeModal() {
+    await this.modalCtrl.dismiss();
+  }
+
   async search($event) {
     console.log($event);
     if($event.length < 3) return;
@@ -76,7 +86,7 @@ export class PostFormComponent implements OnInit {
         break;
     }
     let result = await new Promise((resolve, reject) => {
-      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requested_rid=' + this.settingsService.static_groups[0].rid + '&username=' + $event.substr(1) + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret + '&id_type=' + idType)
+      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + this.settingsService.static_groups[0].rid + '&username=' + $event.substr(1) + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret + '&id_type=' + idType)
       .subscribe((data: any) => {
         let items = [];
         for(var i=0; i < data.length; i++) {
@@ -101,28 +111,40 @@ export class PostFormComponent implements OnInit {
   }
 
   selectedGroup(e) {
-    this.group = e.item;
+    this.group = e.item.txn;
     return ':' + e.username + ' ';
   }
 
   selectedTopic(e) {
-    this.topic = e.item;
+    this.topic = e.item.txn;
     return '#' + e.username + ' ';
   }
 
   selectedMention(e) {
-    this.mention = e.item;
+    this.mention = e.item.txn;
     return '@' + e.username + ' ';
   }
 
   async submit() {
     return new Promise(async (resolve, reject) => {
+      var re = /:/g
+      if(((this.groupChatText || '').match(re) || []).length > 1) {
+        return reject('Only one group can be specified.')
+      }
+      var re = /#/g
+      if (((this.groupChatText || '').match(re) || []).length > 1) {
+        return reject('Only one topic can be specified.')
+      }
       if (!this.group) {
         if (this.groupChatText.indexOf(':') >= 0) {
           var startpos = this.groupChatText.indexOf(':');
           var untilEndTest = this.groupChatText.substr(startpos);
           var endpos = this.groupChatText.indexOf(' ');
-          var segment = this.groupChatText.substr(startpos, endpos);
+          if (endpos > startpos) {
+            var segment = this.groupChatText.substr(startpos, endpos);
+          } else {
+            var segment = this.groupChatText.substr(startpos);
+          }
           if (startpos + untilEndTest.length === segment.length) {
             if (untilEndTest.length > 4) {
               return this.groupService.createGroup(this.parentGroup, untilEndTest.substr(1))
@@ -141,7 +163,7 @@ export class PostFormComponent implements OnInit {
           }
         } else {
           const toast = await this.toastCtrl.create({
-              message: 'Missing group',
+              message: 'Missing :group. Preceed with colon symbol and must be 4 characters minimum',
               duration: 2000
           });
           await toast.present();
@@ -158,7 +180,11 @@ export class PostFormComponent implements OnInit {
             var startpos = this.groupChatText.indexOf('#');
             var untilEndTest = this.groupChatText.substr(startpos);
             var endpos = this.groupChatText.indexOf(' ');
-            var segment = this.groupChatText.substr(startpos, endpos);
+            if (endpos > startpos) {
+              var segment = this.groupChatText.substr(startpos, endpos);
+            } else {
+              var segment = this.groupChatText.substr(startpos);
+            }
             if (startpos + untilEndTest.length === segment.length) {
               if (untilEndTest.length > 4) {
                 return this.topicService.createTopic(this.parentGroup, untilEndTest.substr(1))
@@ -177,7 +203,7 @@ export class PostFormComponent implements OnInit {
             }
           } else {
             const toast = await this.toastCtrl.create({
-                message: 'Missing topic',
+                message: 'Missing #topic. Preceed with hash symbol and must be 4 characters minimum',
                 duration: 2000
             });
             await toast.present();
@@ -191,6 +217,15 @@ export class PostFormComponent implements OnInit {
     .then(() => {
       this.send();
     })
+    .catch(async (err) => {
+      console.log(err); 
+      let alert = await this.alertCtrl.create({
+        header: 'Problem',
+        subHeader: err,
+        buttons: ['OK']
+      });
+      await alert.present();
+    });
   }
 
   async send() {
@@ -207,6 +242,36 @@ export class PostFormComponent implements OnInit {
                   return this.graphService.getFriends();
               })
               .then(() => {
+                  return new Promise((resolve, reject) => {
+                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/topic-conflict?topic_bulletin_secret=' + this.topic.relationship.their_bulletin_secret + '&requested_rid=' + this.group.requested_rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+                    .subscribe((res: any) => {
+                      if(res.result) {
+                        reject("You've already identified with another group.");
+                      } else {
+                        resolve();
+                      }
+                    })
+                  })
+              })
+              .catch(async (err) => {
+                return new Promise(async (resolve, reject) => {
+                  console.log(err); 
+                  let alert = await this.alertCtrl.create({
+                    header: 'Traitor',
+                    subHeader: err,
+                    buttons: ['OK']
+                  });
+                  await alert.present();
+                  reject();
+                })
+              })
+              .then(() => {
+                  let reply;
+                  if (this.post && this.post.id) {
+                    reply = true;
+                  } else {
+                    this.post = {};
+                  }
                   return this.transactionService.generateTransaction({
                       relationship: {
                           their_username: this.group.relationship.their_username,
@@ -215,7 +280,9 @@ export class PostFormComponent implements OnInit {
                           topic_bulletin_secret: this.topic.relationship.their_bulletin_secret,
                           topic_their_username: this.topic.relationship.their_username,
                           my_bulletin_secret: this.bulletinSecretService.generate_bulletin_secret(),
-                          my_username: this.bulletinSecretService.username
+                          my_username: this.bulletinSecretService.username,
+                          id: this.post.id,
+                          reply: reply
                       },
                       their_bulletin_secret: this.group.relationship.their_bulletin_secret,
                       rid: this.group.rid,
@@ -238,10 +305,12 @@ export class PostFormComponent implements OnInit {
                 });
               }).then(() => {
                   this.groupChatText = '';
-                  this.navCtrl.pop();
+                  this.parentComponent.ngOnInit();
+                  this.modalCtrl.dismiss();
               })
               .catch(async (err) => {
-                  console.log(err); 
+                  console.log(err);
+                  if(!err) return;
                   let alert = await this.alertCtrl.create({
                     header: 'Message error',
                     subHeader: err,
@@ -254,6 +323,15 @@ export class PostFormComponent implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  change() {
+    if(this.topic && this.groupChatText.indexOf(this.topic.relationship.their_username) === -1) {
+      this.topic = null;
+    }
+    if(this.group && this.groupChatText.indexOf(this.group.relationship.their_username) === -1) {
+      this.group = null;
+    }
   }
 
 }

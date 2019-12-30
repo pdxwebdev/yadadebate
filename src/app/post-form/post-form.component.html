@@ -1,5 +1,6 @@
-<textarea [mentionConfig]="mentionConfig" (searchTerm)="search($event)" (selectedTerm)="select($event, ahttp)" [(ngModel)]="groupChatText"></textarea>
-<div *ngIf="group">Selected group: {{group.relationship.their_username}}</div>
-<div *ngIf="mention">Selected mention: {{mention.relationship.their_username}}</div>
-<div *ngIf="topic">Selected topic: {{topic.relationship.their_username}}</div>
+<ion-button (click)="closeModal()">
+  <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+</ion-button>
+<textarea [mentionConfig]="mentionConfig" (keyup)="change()" (searchTerm)="search($event)" (selectedTerm)="select($event, ahttp)" [(ngModel)]="groupChatText"></textarea>
+<span *ngIf="topic && group">I identify with {{group.relationship.their_username}} and I'm talking about {{topic.relationship.their_username}}</span>
 <ion-item button (click)="submit()">Submit</ion-item>

@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { TopicCardListComponent } from './topic-card-list.component';
+import { PostCardListComponent } from './post-card-list.component';
 
-describe('TopicCardListComponent', () => {
-  let component: TopicCardListComponent;
-  let fixture: ComponentFixture<TopicCardListComponent>;
+describe('PostCardListComponent', () => {
+  let component: PostCardListComponent;
+  let fixture: ComponentFixture<PostCardListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TopicCardListComponent ],
+      declarations: [ PostCardListComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TopicCardListComponent);
+    fixture = TestBed.createComponent(PostCardListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

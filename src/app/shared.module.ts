@@ -7,6 +7,7 @@ import { PostFormComponent } from './post-form/post-form.component';
 import { MentionModule } from 'angular-mentions';
 import { CommonModule } from '@angular/common';
 import { CardComponent } from './card/card.component';
+import { PostCardListComponent } from './post-card-list/post-card-list.component';
 
 @NgModule({
     imports: [
@@ -19,10 +20,12 @@ import { CardComponent } from './card/card.component';
         VoteComponent,
         PostButtonComponent,
         PostFormComponent,
-        CardComponent
+        CardComponent,
+        PostCardListComponent
     ],
     entryComponents: [
-      PostFormComponent
+      PostFormComponent,
+      CardComponent
     ],
     exports: [ 
         CommonModule,
@@ -30,7 +33,8 @@ import { CardComponent } from './card/card.component';
         VoteComponent,
         PostButtonComponent,
         PostFormComponent,
-        CardComponent
+        CardComponent,
+        PostCardListComponent
     ]
 })
 export class SharedModule {}

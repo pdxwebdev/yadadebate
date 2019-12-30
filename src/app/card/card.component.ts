@@ -1,4 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { NavController } from '@ionic/angular';
+
+declare var Base64;
 
 @Component({
   selector: 'app-card',
@@ -11,9 +14,15 @@ export class CardComponent implements OnInit {
   @Input() votes;
   @Input() cardType;
   @Input() parentComponent;
-  constructor() { }
+  constructor(
+    private navCtrl: NavController
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (!this.item && !this.topic) {
+
+    }
+  }
 
   openTopic() {
 
@@ -24,7 +33,11 @@ export class CardComponent implements OnInit {
   }
 
   viewProfile() {
-    
+
+  }
+
+  async isolateCard() {
+    this.navCtrl.navigateForward('/post?id=' + this.item.id + '&cardType=' + this.cardType)
   }
 
 }

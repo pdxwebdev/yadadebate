@@ -6,8 +6,6 @@ import { IonicModule } from '@ionic/angular';
 import { CommunitiesPageRoutingModule } from './communities-routing.module';
 
 import { CommunitiesPage } from './communities.page';
-
-import { GroupCardListComponent } from '../group-card-list/group-card-list.component';
 import { SharedModule } from '../shared.module';
 
 @NgModule({
@@ -18,8 +16,7 @@ import { SharedModule } from '../shared.module';
     SharedModule
   ],
   declarations: [
-    CommunitiesPage,
-    GroupCardListComponent
+    CommunitiesPage
   ]
 })
 export class CommunitiesPageModule {}

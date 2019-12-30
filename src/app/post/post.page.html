@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>post</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-card
+    [item]="item"
+    [cardType]="cardType"
+    [votes]="votes"
+  ></app-card>
+  <app-post-button
+    *ngIf="topic && group"
+    [topic]="topic"
+    [group]="group"
+    [post]="item"
+    [staticGroup]="staticGroup"
+    [parentComponent]="thisComponent"
+  ></app-post-button>
+  <app-post-card-list
+    *ngIf="transaction.transaction"
+    [rootGroup]="transaction"
+    listType="replies"
+  ></app-post-card-list>
+</ion-content>

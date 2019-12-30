@@ -12,11 +12,15 @@
   <ion-list>
     <ng-container *ngFor="let static_group of settingsService.static_groups">
       <h1>{{static_group.relationship.their_username}}</h1>
-      <app-post-button [staticGroup]="static_group"></app-post-button>
-      <app-topic-card-list
+      <app-post-button
+       [staticGroup]="static_group"
+       [parentComponent]="thisComponent"
+      ></app-post-button>
+      <app-post-card-list
         [rootGroup]="rootGroup"
         *ngFor="let rootGroup of topicGroups[static_group.rid]"
-      ></app-topic-card-list>
+        listType="topic"
+      ></app-post-card-list>
     </ng-container>
   </ion-list>
 </ion-content>

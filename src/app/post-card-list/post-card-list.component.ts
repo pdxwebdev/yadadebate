@@ -1,35 +1,51 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { GraphService } from '../yadalib/graph.service';
 import { SettingsService } from '../yadalib/settings.service';
 import { HttpClient } from '@angular/common/http';
 import { BulletinSecretService } from '../yadalib/bulletin-secret.service';
+import { GraphService } from '../yadalib/graph.service';
+import { VoteComponent } from '../vote/vote.component';
 
 @Component({
-  selector: 'app-group-card-list',
-  templateUrl: './group-card-list.component.html',
-  styleUrls: ['./group-card-list.component.scss'],
+  selector: 'app-post-card-list',
+  templateUrl: './post-card-list.component.html',
+  styleUrls: ['./post-card-list.component.scss'],
 })
-export class GroupCardListComponent implements OnInit {
-  items: any;
-  groups: any;
+export class PostCardListComponent implements OnInit {
   votes: any;
+  posts: any;
   parentComponent: any;
   @Input() rootGroup: any;
+  @Input() listType: any;
   constructor(
-    private graphService: GraphService,
     private settingsService: SettingsService,
     private ahttp: HttpClient,
-    private bulletinSecretService: BulletinSecretService
+    private bulletinSecretService: BulletinSecretService,
+    private graphService: GraphService
   ) { }
 
   ngOnInit() {
     this.parentComponent = this;
-    this.groups = [];
+    this.posts = [];
     return new Promise((resolve, reject) => {
-      let rid = this.rootGroup.transaction.rid;
-      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?rid=' + rid)
+      let url;
+      let rid;
+      switch (this.listType) {
+        case 'topic':
+          rid = this.rootGroup.transaction.relationship.their_bulletin_secret;
+          url = '/topics?topic_bulletin_secret=' + rid
+          break;
+        case 'group':
+          rid = this.rootGroup.transaction.rid;
+          url = '/groups?rid=' + rid
+          break;
+        case 'replies':
+          rid = this.rootGroup.transaction.id;
+          url = '/replies?id=' + rid
+          break;
+      }
+      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + url)
       .subscribe((data: any) => {
-          resolve(data.results);
+          resolve(data.results || []);
       },
       (err) => {
           console.log(err);
@@ -41,13 +57,14 @@ export class GroupCardListComponent implements OnInit {
   }
 
   parseChats(data) {
-    this.groups = [];
+    this.posts = [];
     let chats = [];
     this.votes = {};
     let chats_indexed = {};
     let name;
     for(var i=0; i < data.length; i++) {
       var chat = data[i];
+      if (this.listType !== 'replies' && chat.relationship.reply) continue;
       if (chat.relationship.their_username) name = chat.relationship.their_username;
       if(chat.relationship.groupChatText.vote == 'upvote') {
         if (!this.votes[chat.relationship.groupChatText.id]) this.votes[chat.relationship.groupChatText.id] = 0;
@@ -75,12 +92,12 @@ export class GroupCardListComponent implements OnInit {
       }
     }
     if (chats.length > 0) {
-      chats = chats.sort((a, b) => {
+      chats.sort((a, b) => {
         a.votes = a.votes || 0;
         b.votes = b.votes || 0;
         return (a.votes < b.votes) ? 1 : -1
       });
-      this.groups.push({name: name, chats: chats});
+      this.posts.push({name: name, chats: chats});
     }
   }
 
