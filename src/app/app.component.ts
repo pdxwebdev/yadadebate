@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Platform, ModalController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { SettingsService } from './yadalib/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -32,11 +33,19 @@ export class AppComponent {
       icon: 'lock'
     }
   ];
+  public appPage = [
+    {
+      title: 'Identity',
+      url: '/identity',
+      icon: 'lock'
+    }
+  ];
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private settingsService: SettingsService
   ) {
     this.initializeApp();
   }

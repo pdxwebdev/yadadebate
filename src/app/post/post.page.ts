@@ -4,6 +4,7 @@ import { SettingsService } from '../yadalib/settings.service';
 import { HttpClient } from '@angular/common/http';
 import { BulletinSecretService } from '../yadalib/bulletin-secret.service';
 import { PostCardListComponent } from '../post-card-list/post-card-list.component';
+import { NavController } from '@ionic/angular';
 
 declare var Base64;
 
@@ -29,7 +30,8 @@ export class PostPage implements OnInit {
     private route: ActivatedRoute,
     private ahttp: HttpClient,
     private settingsService: SettingsService,
-    private bulletinSecretService: BulletinSecretService
+    private bulletinSecretService: BulletinSecretService,
+    private navCtrl: NavController
   ) { 
     this.item = {};
     this.votes = {};
@@ -39,6 +41,9 @@ export class PostPage implements OnInit {
   }
 
   ngOnInit() {
+    if(!this.settingsService.remoteSettings.baseUrl) {
+      return this.navCtrl.navigateRoot('/');
+    }
     return new Promise((resolve, reject) => {
       if (this.postCardListComponent) this.postCardListComponent.ngOnInit();
       this.route.queryParams.subscribe((params) => {

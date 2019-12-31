@@ -16,11 +16,14 @@
        [staticGroup]="static_group"
        [parentComponent]="thisComponent"
       ></app-post-button>
-      <app-post-card-list
-        [rootGroup]="rootGroup"
-        *ngFor="let rootGroup of topicGroups[static_group.rid]"
-        listType="topic"
-      ></app-post-card-list>
+      <ng-container *ngIf="topicGroups[static_group.rid]">
+        <app-post-card-list
+          [rootGroup]="rootGroup"
+          *ngFor="let rootGroup of topicGroups[static_group.rid]"
+          listType="topic"
+          [parentComponent]="thisComponent"
+        ></app-post-card-list>
+      </ng-container>
     </ng-container>
   </ion-list>
 </ion-content>

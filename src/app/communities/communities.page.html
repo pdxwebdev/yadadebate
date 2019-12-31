@@ -13,11 +13,13 @@
     <ng-container *ngFor="let static_group of settingsService.static_groups">
       <h1>{{static_group.relationship.their_username}}</h1>
       <app-post-button [staticGroup]="static_group"></app-post-button>
-      <app-post-card-list
-        [rootGroup]="rootGroup"
-        *ngFor="let rootGroup of groups[static_group.rid]"
-        listType="group"
-      ></app-post-card-list>
+      <ng-container *ngIf="groups[static_group.rid]">
+        <app-post-card-list
+          [rootGroup]="rootGroup"
+          *ngFor="let rootGroup of groups[static_group.rid]"
+          listType="group"
+        ></app-post-card-list>
+      </ng-container>
     </ng-container>
   </ion-list>
 </ion-content>

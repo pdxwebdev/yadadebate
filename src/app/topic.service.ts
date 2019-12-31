@@ -42,13 +42,13 @@ export class TopicService {
           var dh_public_key = this.toHex(raw_dh_public_key);
   
           //root topic is requesting the new sub topic from yadacoin-regnet
-          var bulletin_secrets = [this.graphService.graph.bulletin_secret, bulletin_secret].sort(function (a, b) {
+          var bulletin_secrets = [this.graphService.graph.server_bulletin_secret, bulletin_secret].sort(function (a, b) {
               return a.toLowerCase().localeCompare(b.toLowerCase());
           });
           var requested_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();
 
           //root topic of yadacoin-regnet is requesting
-          var bulletin_secrets = [this.parentGroup.relationship.their_bulletin_secret, this.graphService.graph.bulletin_secret].sort(function (a, b) {
+          var bulletin_secrets = [this.parentGroup.relationship.their_bulletin_secret, this.graphService.graph.server_bulletin_secret].sort(function (a, b) {
               return a.toLowerCase().localeCompare(b.toLowerCase());
           });
           var requester_rid = forge.sha256.create().update(bulletin_secrets[0] + bulletin_secrets[1]).digest().toHex();

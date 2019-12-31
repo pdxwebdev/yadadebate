@@ -4,7 +4,7 @@
     <div class="scrolling-wrapper-flexbox" scrollX="true">
       <div scrollX="true" direction="x" *ngFor="let item of topic.chats" class="card">
         <ion-col col-4>
-          <app-card [cardType]="listType" [item]="item" [votes]="votes" [topic]="topic" [parentComponent]="parentComponent"></app-card>
+          <app-card [cardType]="listType" [item]="item" [votes]="votes" [topic]="topic" [parentComponent]="thisComponent"></app-card>
         </ion-col>
       </div>
     </div>

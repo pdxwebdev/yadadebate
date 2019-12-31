@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GraphService } from '../yadalib/graph.service';
+import { SettingsService } from '../yadalib/settings.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-friends',
@@ -10,7 +12,9 @@ export class FriendsPage implements OnInit {
     items: any;
     pageTitle: any;
     constructor(
-        private graphService: GraphService
+        private graphService: GraphService,
+        private settingsService: SettingsService,
+        private navCtrl: NavController
     ) {
         this.graphService.getDistinctList('friends')
         .then((graphArray) => {
@@ -31,5 +35,8 @@ export class FriendsPage implements OnInit {
     }
 
     ngOnInit() {
+        if(!this.settingsService.remoteSettings.baseUrl) {
+          return this.navCtrl.navigateRoot('/');
+        }
     }
 }

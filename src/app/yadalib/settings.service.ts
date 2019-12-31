@@ -15,32 +15,32 @@ export class SettingsService {
         this.remoteSettings = {};
         this.tokens = {};
         this.static_groups = [{
-            "rid": "4cef179f4967379a780690cd6f22e95a4b6a95ea5dce412bdb21a77618b3fe38",
-            "fee": 0,
-            "requester_rid": "",
-            "requested_rid": "",
-            "outputs": [{
-                "to": "19M7JYUx4tXf34XHvZnbC3kqJPNwcaQ4Qz",
-                "value": 0
-            }, {
-                "to": "1NhrRhWFnoSNJhLMTJi7j2w1bJ565Dt2RQ",
-                "value": 0
-            }],
-            "time": "1577148473",
-            "public_key": "02a64546efb9993141dc45c023ba197c46d4f0d8185805c017bf174761f6288feb",
-            "dh_public_key": "ebded473e81cb65dc92ee0b6cdd80b99ca31d7096c452da1092e917decdba829",
-            "inputs": [],
+            "time": "1577777411",
+            "rid": "eaf7190434fdfbc850dd848e3dc0e7c82fa0d3594e50a9f82d50407be5c9f139",
+            "id": "MEQCIBxKsO5oeSKtsnQYhvDFfpRzIMhV966nVfx6eeFQyl2EAiBRHSN9erdoMC7qPCNxIagj+tlngUvIEDoJk8LCt40fXA==",
             "relationship": {
-                "their_bulletin_secret": "MEQCIEQ9RamrV+GAAi6y57G6NLmR7RdE54pzumRpo4LMqPGvAiB39K8dvy7p4dUu358NKYozwLgxw28Uxy+A8zaSO9Bv/Q==",
-                "their_public_key": "02943d5594a8a55702085ab5e0036f9846445f9707779867557af57eb6e3b1261f",
-                "their_username": "Politics",
-                "their_address": "19M7JYUx4tXf34XHvZnbC3kqJPNwcaQ4Qz",
-                "my_bulletin_secret": "MEQCIBp8vPXPdOuZm0JboZDaGCqyZB5cEVuAvFv/hysejV9+AiA3N9muc4JgAJbSixn3RaEHkbETDLTb5pfV8jv2rKjuVg==",
+                "their_bulletin_secret": "MEQCIGrxWIXd75LdnaI5lnSoWzkTZhMB5LJVl4S0i7+axjImAiBbNP7IT2jLX2iessJIpiomuOjy792vqh9YajmV1g2Plw==",
+                "their_public_key": "021a7869cf7f8913db58c7f7315b70b80bbd14175508c9e5d22de70741910708bc",
+                "their_username": "Political",
+                "their_address": "12GUAZH8i2Y5aLEPuuM8qAzgTPmak8h1mo",
+                "my_bulletin_secret": "MEUCIQCSU1CuMJHbChEojQrJce4FYakrgJXJXcDZgO+o54s0egIgBLVAY1iCC4ftBjZspPS8U5VqvqbIK7qt2E8C70HYSAc=",
                 "my_username": "yadacoin-regnet",
                 "group": true
             },
-            "hash": "82a85f284d00432c9d094a639a7bbc8287bd811b8c3b60aea017d6afcd321341",
-            "id": "MEUCIQCvFFyaeFoQF7x64qq0G394PmaL6CT3t7DT+xICzbJiGgIgRfaRjyzDNE4yuqGI4wQME9YPq/1v+HVoISFKaXpJNR0="
+            "public_key": "02a64546efb9993141dc45c023ba197c46d4f0d8185805c017bf174761f6288feb",
+            "dh_public_key": "c63684b0534bf7c8486980fbe245eb45f1f25975360ea3c5219f16296042561f",
+            "fee": 0.0,
+            "hash": "d7ec9224e23607507bcb4de74f7e91eb49448e507a2dcc2a70d375389a894d76",
+            "inputs": [],
+            "outputs": [{
+                    "to": "12GUAZH8i2Y5aLEPuuM8qAzgTPmak8h1mo",
+                    "value": 0
+                },
+                {
+                    "to": "1NhrRhWFnoSNJhLMTJi7j2w1bJ565Dt2RQ",
+                    "value": 0
+                }
+            ]
         }];
     }
 

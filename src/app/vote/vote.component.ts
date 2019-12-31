@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TransactionService } from '../yadalib/transaction.service';
 import { WalletService } from '../yadalib/wallet.service';
@@ -17,6 +17,7 @@ export class VoteComponent implements OnInit {
   @Input() item: any;
   @Input() votes: any;
   @Input() parentComponent: any;
+  @Output() voteChanged = new EventEmitter();
   constructor(
     private alertCtrl: AlertController,
     private transactionService: TransactionService,
@@ -122,7 +123,8 @@ export class VoteComponent implements OnInit {
                         requester_rid: requester_rid,
                         requested_rid: requested_rid
                     });
-                }).then((hash) => {
+                })
+                .then((hash) => {
                     return this.transactionService.sendTransaction();
                 })
                 .then(() => {
@@ -135,9 +137,10 @@ export class VoteComponent implements OnInit {
                         console.log(err);
                     });
                   });
-                }).then(() => {
+                })
+                .then(() => {
                     this.groupChatText = '';
-                    //this.parentComponent.ngOnInit();
+                    this.voteChanged.emit({vote: 1});
                     resolve();
                 })
                 .catch(async (err) => {

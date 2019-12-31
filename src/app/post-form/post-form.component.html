@@ -2,5 +2,6 @@
   <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
 </ion-button>
 <textarea [mentionConfig]="mentionConfig" (keyup)="change()" (searchTerm)="search($event)" (selectedTerm)="select($event, ahttp)" [(ngModel)]="groupChatText"></textarea>
+<span>You must specify a single #topic. Topics must be prefixed with a hash symbol "#" and greater than four characters. You must also specify a single :group alliance. Which side are you on? Groups are prefixed with a colon symbol ":" and greater than four characters. Example: I am a :diver and I'm talking about #iswaterwet</span>
 <span *ngIf="topic && group">I identify with {{group.relationship.their_username}} and I'm talking about {{topic.relationship.their_username}}</span>
 <ion-item button (click)="submit()">Submit</ion-item>

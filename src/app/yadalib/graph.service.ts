@@ -101,6 +101,7 @@ export class GraphService {
                 try {;
                     this.graph.rid = info.rid;
                     this.graph.bulletin_secret = info.bulletin_secret;
+                    this.graph.server_bulletin_secret = info.server_bulletin_secret;
                     this.graph.username = info.username;
                     this.graph.registered = info.registered;
                     this.graph.pending_registration = info.pending_registration;
