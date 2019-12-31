@@ -26,7 +26,6 @@ export class PostCardListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.thisComponent = this;
     this.posts = this.rootGroup.transaction.posts;
     this.votes = this.rootGroup.transaction.votes;
     // return new Promise((resolve, reject) => {

@@ -9,6 +9,7 @@
     [item]="item"
     [cardType]="cardType"
     [votes]="votes"
+    [parentComponent]="thisComponent"
   ></app-card>
   <app-post-button
     *ngIf="topic && group"
@@ -19,8 +20,9 @@
     [parentComponent]="thisComponent"
   ></app-post-button>
   <app-post-card-list
-    *ngIf="transaction.transaction"
+    *ngIf="transaction.transaction && transaction.transaction.posts"
     [rootGroup]="transaction"
     listType="replies"
+    [parentComponent]="thisComponent"
   ></app-post-card-list>
 </ion-content>

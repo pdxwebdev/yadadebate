@@ -140,7 +140,7 @@ export class VoteComponent implements OnInit {
                 })
                 .then(() => {
                     this.groupChatText = '';
-                    this.voteChanged.emit({vote: 1});
+                    this.parentComponent.ngOnInit();
                     resolve();
                 })
                 .catch(async (err) => {
