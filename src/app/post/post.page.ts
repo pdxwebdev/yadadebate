@@ -49,42 +49,45 @@ export class PostPage implements OnInit {
     return new Promise((resolve, reject) => {
       if (this.postCardListComponent) this.postCardListComponent.ngOnInit();
       this.route.queryParams.subscribe((params) => {
-        if (params && params.id) {
-          this.id = params.id.replace(/ /g, '+');
-          this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + this.id)
-          .subscribe((res: any) => {
-            this.item = res.result;
-            this.item.time = new Date(parseInt(this.item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
-            this.transaction = {transaction: this.item};
-            for(var i=0; i < this.settingsService.static_groups.length; i++) {
-              if(this.settingsService.static_groups[i].rid === this.item.requester_rid) {
-                this.staticGroup = this.settingsService.static_groups[i];
-                break;
+        return new Promise((resolve2, reject2) => {
+          if (params && params.id) {
+            this.id = params.id.replace(/ /g, '+');
+            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + this.id)
+            .subscribe((res: any) => {
+              this.item = res.result;
+              this.item.time = new Date(parseInt(this.item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
+              this.transaction = {transaction: this.item};
+              for(var i=0; i < this.settingsService.static_groups.length; i++) {
+                if(this.settingsService.static_groups[i].rid === this.item.requester_rid) {
+                  this.staticGroup = this.settingsService.static_groups[i];
+                  break;
+                }
               }
-            }
-            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
-            .subscribe((res: any) => {
-              this.group = res.result.txn;
+              this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
+              .subscribe((res: any) => {
+                this.group = res.result.txn;
+              });
+              this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.item.relationship.topic_bulletin_secret)
+              .subscribe((res: any) => {
+                this.topic = res.result.txn;
+              });
+              return resolve2();
             });
-            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.item.relationship.topic_bulletin_secret)
-            .subscribe((res: any) => {
-              this.topic = res.result.txn;
-            });
-            return resolve();
-          });
-          this.getVotes(this.id);
-        }
-        if (params && params.cardType) {
-          this.cardType = params.cardType;
-        }
+            this.getVotes(this.id);
+          }
+          if (params && params.cardType) {
+            this.cardType = params.cardType;
+          }
+        })
+        .then(() => {
+          return this.getReplies(this.transaction);
+        })
+        .then(() => {
+            this.replies = this.repliesPrepare;
+            resolve();
+        });
       });
-    })
-    .then(() => {
-      return this.getReplies(this.transaction);
-    })
-    .then(() => {
-        this.replies = this.repliesPrepare;
-    })
+    });
   }
 
   getReplies(rootGroup) {
@@ -105,6 +108,7 @@ export class PostPage implements OnInit {
   }
 
   getVotes(id) {
+    this.votes[id] = 0;
     return new Promise((resolve, reject) => {
       this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/votes?id=' + id)
       .subscribe((res: any) => {

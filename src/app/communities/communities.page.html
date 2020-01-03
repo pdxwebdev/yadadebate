@@ -5,19 +5,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-refresher (ionRefresh)="refresh($event)" slot="fixed">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-  <ion-spinner *ngIf="loading"></ion-spinner>
   <ion-list>
     <ng-container *ngFor="let static_group of settingsService.static_groups">
       <h1>{{static_group.relationship.their_username}}</h1>
-      <app-post-button [staticGroup]="static_group"></app-post-button>
+      <app-post-button 
+       [staticGroup]="static_group"
+       [parentComponent]="thisComponent"
+       ></app-post-button>
       <ng-container *ngIf="groups[static_group.rid]">
         <app-post-card-list
           [rootGroup]="rootGroup"
           *ngFor="let rootGroup of groups[static_group.rid]"
           listType="group"
+          [parentComponent]="thisComponent"
         ></app-post-card-list>
       </ng-container>
     </ng-container>

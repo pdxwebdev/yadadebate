@@ -45,7 +45,7 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private settingsService: SettingsService
+    public settingsService: SettingsService
   ) {
     this.initializeApp();
   }

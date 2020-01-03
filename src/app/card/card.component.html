@@ -2,8 +2,8 @@
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
     <ion-card-title>
-      <a href="#" (click)="viewProfile(item)">{{item.relationship.my_username || 'Anonymous'}}</a> from 
-      <a href="#" (click)="openGroup(group)">{{item.relationship.their_username}}</a>
+      <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> from 
+      <a href="#">{{item.relationship.their_username}}</a>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
@@ -14,9 +14,9 @@
 <ion-card *ngIf="cardType == 'group' && item.relationship" (click)="isolateCard()">
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
-    <ion-card-title (click)="viewProfile(item)">
-        <a href="#" (click)="viewProfile(item)">{{item.relationship.my_username || 'Anonymous'}}</a> talking about 
-        <a href="#" (click)="openTopic(topic)">{{item.relationship.topic_their_username}}</a>
+    <ion-card-title>
+        <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> talking about 
+        <a href="#">{{item.relationship.topic_their_username}}</a>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
@@ -27,8 +27,8 @@
 <ion-card *ngIf="cardType == 'replies' && item.relationship" (click)="isolateCard()">
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
-    <ion-card-title (click)="viewProfile(item)">
-        <a href="#" (click)="viewProfile(item)">{{item.relationship.my_username || 'Anonymous'}}</a> responded
+    <ion-card-title>
+        <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> responded
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>

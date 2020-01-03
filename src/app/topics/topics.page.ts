@@ -30,10 +30,9 @@ export class TopicsPage implements OnInit {
   topicGroups: any;
   topicGroupsPrepare: any;
   thisComponent: any;
-  alreadySorted: any;
   @ViewChildren(PostCardListComponent) postCardListComponents: PostCardListComponent
   constructor(
-    private settingsService: SettingsService,
+    public settingsService: SettingsService,
     private transactionService: TransactionService,
     private graphService: GraphService,
     private bulletinSecretService: BulletinSecretService,
@@ -42,7 +41,6 @@ export class TopicsPage implements OnInit {
   ) { 
     this.topicGroups = {};
     this.thisComponent = this;
-    this.alreadySorted = false;
   }
 
   ngOnInit() {

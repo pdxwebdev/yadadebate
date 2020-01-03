@@ -40,7 +40,7 @@ export class CommunitiesPage implements OnInit {
     groups: any;
     groupsPrepare: any;
     votes: any;
-    alreadySorted: any;
+    thisComponent: any;
     @ViewChildren(PostCardListComponent) postCardListComponents: PostCardListComponent
     constructor(
         private graphService: GraphService,
@@ -57,7 +57,10 @@ export class CommunitiesPage implements OnInit {
         public toastCtrl: ToastController,
         public router: Router,
         public groupService: GroupService
-    ) {}
+    ) {
+        this.groups = {};
+        this.thisComponent = this;
+    }
 
     ngOnInit() {
         if(!this.settingsService.remoteSettings.baseUrl) {
