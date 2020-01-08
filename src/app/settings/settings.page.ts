@@ -69,7 +69,7 @@ export class SettingsPage implements OnInit {
     refresh(refresher) {
         this.noUsername = false;
         return this.bulletinSecretService.all().then((keys) => {
-            this.setKey(keys);
+            this.setKeys(keys);
         }).then(() => {
             this.getFavorites();
         }).then(() => {
@@ -114,7 +114,8 @@ export class SettingsPage implements OnInit {
             })
             .then(() => {
                 if (favorites.length == 0) {
-                    var host = 'http://0.0.0.0:5000';
+                    //var host = 'http://3.225.228.97';
+                    var host = 'http://0.0.0.0';
                     this.storage.set('favorites-Home', host);
                     this.storage.set('node', host);
                     favorites.push({label: 'Home', url: host});
@@ -144,7 +145,7 @@ export class SettingsPage implements OnInit {
         });
     }
 
-    setKey(keys) {
+    setKeys(keys) {
         var keys_indexed = {};
         for (var i = 0; i < keys.length; i++) {
             keys_indexed[keys[i].key] = keys[i].key;

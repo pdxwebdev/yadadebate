@@ -1,9 +1,9 @@
-<ion-card *ngIf="cardType == 'topic' && item.relationship" (click)="isolateCard()">
+<ion-card *ngIf="cardType == 'topic' && item.relationship" (click)="isolateCard($event)">
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
     <ion-card-title>
-      <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> from 
-      <a href="#">{{item.relationship.their_username}}</a>
+      {{item.relationship.my_username || 'Anonymous'}} from 
+      <a href="#" (click)="gotoGroup($event, item)">{{item.relationship.their_username}}</a>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
@@ -11,12 +11,12 @@
     <app-vote [item]="item" [votes]="votes" [parentComponent]="parentComponent"></app-vote>
   </ion-card-content>
 </ion-card>
-<ion-card *ngIf="cardType == 'group' && item.relationship" (click)="isolateCard()">
+<ion-card *ngIf="cardType == 'group' && item.relationship" (click)="isolateCard($event)">
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
     <ion-card-title>
-        <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> talking about 
-        <a href="#">{{item.relationship.topic_their_username}}</a>
+        {{item.relationship.my_username || 'Anonymous'}} talking about 
+        <a href="#" (click)="gotoTopic($event, item)">{{item.relationship.topic_their_username}}</a>
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>
@@ -24,11 +24,11 @@
     <app-vote [item]="item" [votes]="votes" [parentComponent]="parentComponent"></app-vote>
   </ion-card-content>
 </ion-card>
-<ion-card *ngIf="cardType == 'replies' && item.relationship" (click)="isolateCard()">
+<ion-card *ngIf="cardType == 'replies' && item.relationship" (click)="isolateCard($event)">
   <ion-card-header>
     <ion-card-subtitle>{{item.fee}} YADA - {{item.time}}</ion-card-subtitle>
     <ion-card-title>
-        <a href="#">{{item.relationship.my_username || 'Anonymous'}}</a> responded
+        {{item.relationship.my_username || 'Anonymous'}} responded
     </ion-card-title>
   </ion-card-header>
   <ion-card-content>

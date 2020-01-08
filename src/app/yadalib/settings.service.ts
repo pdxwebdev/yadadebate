@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
 
 
 @Injectable({
@@ -11,6 +12,7 @@ export class SettingsService {
     tokens = {};
     static_groups = [];
     constructor(
+        public storage: Storage
     ) {
         this.remoteSettings = {};
         this.tokens = {};
@@ -44,9 +46,17 @@ export class SettingsService {
         }];
     }
 
-    go() {
+    reinit() {
         return new Promise((resolve, reject) => {
-
-        });
+            return this.storage.get('node')
+            .then((value) => {
+                if(value){
+                    this.remoteSettingsUrl = value;
+                    return resolve();
+                } else {
+                    return reject();
+                }
+            });
+        })
     }
 }

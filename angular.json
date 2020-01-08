@@ -49,8 +49,8 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/yadavote",
-              "deployUrl": "/yadavote/",
+              "baseHref": "/appvote/",
+              "deployUrl": "/appvotestatic/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

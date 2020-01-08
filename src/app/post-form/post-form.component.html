@@ -1,5 +1,5 @@
 <ion-button (click)="closeModal()">
-  <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+  <ion-icon slot="icon-only" src="/appvotestatic/svg/md-arrow-back.svg"></ion-icon>
 </ion-button>
 <textarea [mentionConfig]="mentionConfig" (keyup)="change()" (searchTerm)="search($event)" [(ngModel)]="groupChatText"></textarea>
 <span>You must specify a single #topic. Topics must be prefixed with a hash symbol "#" and greater than four characters. You must also specify a single :group alliance. Which side are you on? Groups are prefixed with a colon symbol ":" and greater than four characters. Example: I am a :diver and I'm talking about #iswaterwet</span>

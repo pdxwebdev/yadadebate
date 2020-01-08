@@ -24,19 +24,25 @@ export class CardComponent implements OnInit {
     }
   }
 
-  openTopic() {
-
+  gotoTopic(e, item) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.navCtrl.navigateForward('/topics?id=' + item.relationship.topic_bulletin_secret)
   }
    
-  openGroup() {
-
+  gotoGroup(e, item) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.navCtrl.navigateForward('/communities?id=' + item.relationship.their_bulletin_secret)
   }
 
   viewProfile() {
 
   }
 
-  async isolateCard() {
+  async isolateCard(e) {
+    e.preventDefault();
+    e.stopPropagation();
     this.navCtrl.navigateForward('/post?id=' + this.item.id + '&cardType=' + this.cardType)
   }
 

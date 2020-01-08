@@ -15,29 +15,29 @@ export class AppComponent {
     {
       title: 'Topics',
       url: '/topics',
-      icon: 'quote'
+      icon: '/appvotestatic/svg/md-quote.svg'
     },
     {
       title: 'Communities',
       url: '/communities',
-      icon: 'people'
+      icon: '/appvotestatic/svg/md-people.svg'
     },
     {
       title: 'Friends',
       url: '/friends',
-      icon: 'person'
+      icon: '/appvotestatic/svg/md-person.svg'
     },
     {
       title: 'Identity',
       url: '/identity',
-      icon: 'lock'
+      icon: '/appvotestatic/svg/md-lock.svg'
     }
   ];
   public appPage = [
     {
       title: 'Identity',
       url: '/identity',
-      icon: 'lock'
+      icon: '/appvotestatic/svg/md-lock.svg'
     }
   ];
 

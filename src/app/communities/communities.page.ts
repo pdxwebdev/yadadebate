@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { 
   NavController,
   ModalController,
@@ -18,6 +18,7 @@ import { NavigationExtras } from '@angular/router';
 import { IonRadioGroup } from '@ionic/angular';
 import { GroupService } from '../group.service';
 import { PostCardListComponent } from '../post-card-list/post-card-list.component';
+import { PeerService } from '../yadalib/peer.service';
 
 declare var Base64;
 declare var foobar;
@@ -41,8 +42,11 @@ export class CommunitiesPage implements OnInit {
     groupsPrepare: any;
     votes: any;
     thisComponent: any;
+    id: any;
+    params: any;
     @ViewChildren(PostCardListComponent) postCardListComponents: PostCardListComponent
     constructor(
+        public route: ActivatedRoute,
         private graphService: GraphService,
         public navCtrl: NavController,
         public storage: Storage,
@@ -56,34 +60,87 @@ export class CommunitiesPage implements OnInit {
         public modalCtrl: ModalController,
         public toastCtrl: ToastController,
         public router: Router,
-        public groupService: GroupService
+        public groupService: GroupService,
+        public peerService: PeerService
     ) {
         this.groups = {};
         this.thisComponent = this;
     }
 
     ngOnInit() {
-        if(!this.settingsService.remoteSettings.baseUrl) {
-          return this.navCtrl.navigateRoot('/');
-        }
-        this.groups = [];
-        let promises = [];
-
-        return this.graphService.getInfo()
-        .then(() => {
-            for(var i=0; i < this.settingsService.static_groups.length; i++) {
-                var group = this.settingsService.static_groups[i];
-                promises.push(new Promise((resolve, reject) => {
-                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + group.rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
-                    .subscribe((data) => {
-                        return resolve({group: group, data: data});
-                    });
-                }));
+        this.groups = [];  
+        this.route.queryParams.subscribe((params) => {
+            this.params = params;
+            return this.buildView();
+        });
+    }
+    
+    buildView() {
+        return new Promise((resolve, reject) => {
+            if(this.settingsService.remoteSettings.baseUrl) {
+                return resolve();
+            } else {
+                return this.settingsService.reinit()
+                .then(() => {
+                    return resolve();
+                });
             }
-
-            return Promise.all(promises)
         })
-        .then((promiseResults) => {
+        .then(() => {
+            return this.peerService.go()
+        })
+        .then(() => {
+            return this.storage.get('last-keyname')
+        })
+        .then((key) => {
+            return new Promise((resolve, reject) => {
+                if(key) {
+                    return resolve(key)
+                } else {
+                    return reject();
+                }
+            });
+        })
+        .then((key) => {
+            return this.bulletinSecretService.set(key);
+        })
+        .then(() => {
+            this.graphService.getInfo()
+        })
+        .then(() => {
+            return new Promise((resolve, reject) => {
+                if (this.params && this.params.id) {
+                    this.id = this.params.id.replace(/ /g, '+');
+                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.id)
+                    .subscribe((res: any) => {
+                        let item = res.result;
+                        item.time = new Date(parseInt(item.txn.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
+                        for(var i=0; i < this.settingsService.static_groups.length; i++) {
+                            if(this.settingsService.static_groups[i].rid === item.txn.requester_rid) {
+                                this.rootGroup = this.settingsService.static_groups[i];
+                                break;
+                            }
+                        }
+                        let fauxGroups = [];
+                        fauxGroups.push({group: this.rootGroup, data: [item]});
+                        return resolve(fauxGroups);
+                    });
+                } else {
+                    let promises = [];
+                    for(var i=0; i < this.settingsService.static_groups.length; i++) {
+                        var group = this.settingsService.static_groups[i];
+                        promises.push(new Promise((resolve2, reject) => {
+                            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + group.rid + '&id_type=group&bulletin_secret=' + group.relationship.their_bulletin_secret)
+                            .subscribe((data) => {
+                                return resolve2({group: group, data: data});
+                            });
+                        }));
+                    }
+                    return resolve(Promise.all(promises))
+                }
+            });
+        })
+        .then((promiseResults: any) => {
             return new Promise((resolve, reject) => {
                 var items = {};
                 for (let i = 0; i < promiseResults.length; i++) {
@@ -126,6 +183,9 @@ export class CommunitiesPage implements OnInit {
         })
         .then(() => {
             this.groups = this.groupsPrepare;
+        })
+        .catch((err) => {
+          this.navCtrl.navigateRoot('/');
         });
     }
 
@@ -210,10 +270,6 @@ export class CommunitiesPage implements OnInit {
 
     activateCreateTopicForm() {
         this.createTopicForm = !this.createTopicForm;
-    }
-
-    groupAnswer(answer) {
-        this.rootGroup = answer.detail.value;
     }
 
 }
