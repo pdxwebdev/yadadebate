@@ -29,7 +29,9 @@ export class VoteComponent implements OnInit {
     private settingsService: SettingsService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if(!this.votes[this.item.id]) this.votes[this.item.id] = 0;
+  }
 
   async segmentChanged(ev: any, item: any) {
     ev.preventDefault();
@@ -44,10 +46,6 @@ export class VoteComponent implements OnInit {
       return false;
     }
     this.vote(item)
-    .then(() => {
-      item.vote = item.prevVote === item.vote ? '' : item.vote;
-      item.prevVote = item.vote;
-    })
     .catch(() => {
       console.log('canceled vote');
       item.prevVote = '';
@@ -112,7 +110,7 @@ export class VoteComponent implements OnInit {
                             their_username: their_username,
                             their_bulletin_secret: their_bulletin_secret,
                             groupChatText: {
-                              vote: item.vote,
+                              vote: 'upvote',
                               id: item.id
                             },
                             my_bulletin_secret: this.bulletinSecretService.generate_bulletin_secret(),
@@ -140,7 +138,8 @@ export class VoteComponent implements OnInit {
                 })
                 .then(() => {
                     this.groupChatText = '';
-                    this.parentComponent.ngOnInit();
+                    this.votes[this.item.id] += 1;
+                    this.item.alreadyVoted = true;
                     resolve();
                 })
                 .catch(async (err) => {

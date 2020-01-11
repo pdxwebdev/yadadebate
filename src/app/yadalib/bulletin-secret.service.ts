@@ -48,16 +48,19 @@ export class BulletinSecretService {
                 return 0
             });
             if (!this.keyname) {
-                this.storage.get('last-keyname').then((key) => {
+                return this.storage.get('last-keyname').then((key) => {
                     if(key && typeof key == 'string') {
                         this.keyname = key;
                     } else {
                         this.keyname = keys[0].idx
                     }
-                    resolve(keys);
+                    return resolve(keys);
+                })
+                .catch((err) => {
+                    return reject();
                 });
             } else {
-                resolve(keys);
+                return resolve(keys);
             }
         });
     }

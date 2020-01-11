@@ -1,13 +1,17 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>settings</ion-title>
-  </ion-toolbar>
-</ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button>
+              <ion-icon src='/appvotestatic/svg/md-menu.svg'></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-refresher (ionRefresh)="refresh($event)" slot="fixed">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
   <h3>Identities</h3>
   <button ion-button secondary (click)="createKey()">Create</button>
   <button ion-button secondary (click)="signinCode()">Signin code</button>

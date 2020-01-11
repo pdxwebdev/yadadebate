@@ -8,6 +8,7 @@ import { NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { PeerService } from '../yadalib/peer.service';
 import { GraphService } from '../yadalib/graph.service';
+import { SessionService } from '../session.service';
 
 declare var Base64;
 
@@ -39,7 +40,8 @@ export class PostPage implements OnInit {
     private navCtrl: NavController,
     public storage: Storage,
     public peerService: PeerService,
-    public graphService: GraphService
+    public graphService: GraphService,
+    public sessionService: SessionService
   ) { 
     this.item = {};
     this.votes = {};
@@ -57,39 +59,9 @@ export class PostPage implements OnInit {
   }
 
   buildView() {
-    return new Promise((resolve, reject) => {
-        if(this.settingsService.remoteSettings.baseUrl) {
-            return resolve();
-        } else {
-            return this.settingsService.reinit()
-            .then(() => {
-                return resolve();
-            });
-        }
-    })
+    this.sessionService.init()
     .then(() => {
-        return this.peerService.go()
-    })
-    .then(() => {
-        return this.storage.get('last-keyname')
-    })
-    .then((key) => {
-        return new Promise((resolve, reject) => {
-            if(key) {
-                return resolve(key)
-            } else {
-                return reject();
-            }
-        });
-    })
-    .then((key) => {
-        return this.bulletinSecretService.set(key);
-    })
-    .then(() => {
-        this.graphService.getInfo()
-    })
-    .then(() => {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject2) => {
         if (this.postCardListComponent) this.postCardListComponent.ngOnInit();
         if (this.params && this.params.id) {
           this.id = this.params.id.replace(/ /g, '+');
@@ -98,21 +70,25 @@ export class PostPage implements OnInit {
             this.item = res.result;
             this.item.time = new Date(parseInt(this.item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
             this.transaction = {transaction: this.item};
-            for(var i=0; i < this.settingsService.static_groups.length; i++) {
-              if(this.settingsService.static_groups[i].rid === this.item.requester_rid) {
-                this.staticGroup = this.settingsService.static_groups[i];
-                break;
-              }
+            this.staticGroup = this.settingsService.static_groups_by_rid[this.item.requester_rid];
+
+            this.group = this.settingsService.groups_by_bulletin_secret[this.item.relationship.their_bulletin_secret];
+            if(!this.group) {
+              this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
+              .subscribe((res: any) => {
+                this.settingsService.groups_by_bulletin_secret[this.item.relationship.their_bulletin_secret] = res.result.txn;
+                this.group = res.result.txn;
+              });
             }
-            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
-            .subscribe((res: any) => {
-              this.group = res.result.txn;
-            });
-            this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.item.relationship.topic_bulletin_secret)
-            .subscribe((res: any) => {
-              this.topic = res.result.txn;
-            });
-            return resolve2();
+            this.topic = this.settingsService.topics_by_bulletin_secret[this.item.relationship.topic_bulletin_secret];
+            if(!this.topic) {
+              this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.item.relationship.topic_bulletin_secret)
+              .subscribe((res: any) => {
+                this.settingsService.topics_by_bulletin_secret[this.item.relationship.topic_bulletin_secret] = res.result.txn;
+                this.topic = res.result.txn;
+              });
+            }
+            return resolve();
           });
           this.getVotes(this.id);
         }

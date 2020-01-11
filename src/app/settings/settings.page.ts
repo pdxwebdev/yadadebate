@@ -114,8 +114,8 @@ export class SettingsPage implements OnInit {
             })
             .then(() => {
                 if (favorites.length == 0) {
-                    //var host = 'http://3.225.228.97';
-                    var host = 'http://0.0.0.0';
+                    var host = 'http://3.225.228.97';
+                    //var host = 'http://0.0.0.0';
                     this.storage.set('favorites-Home', host);
                     this.storage.set('node', host);
                     favorites.push({label: 'Home', url: host});
@@ -313,12 +313,14 @@ export class SettingsPage implements OnInit {
                 {
                     text: 'Save',
                     handler: async data => {
-                        const toast = await this.toastCtrl.create({
-                            message: 'Identity created',
-                            duration: 2000
+                        return this.checkUsername(data.username)
+                        .then(() => {
+                            return resolve(data.username)  
+                        })
+                        .catch(() => {
+                            this.createKey();
+                            return reject(data.username) 
                         });
-                        await toast.present();
-                        resolve(data.username);
                     }
                 }
                 ]
@@ -347,14 +349,34 @@ export class SettingsPage implements OnInit {
                 return this.graphService.getInfo();
             }
         })
-        .then(() => {
-            return this.refresh(null)
+        .then(async () => {
+
+            const toast = await this.toastCtrl.create({
+                message: 'Identity created',
+                duration: 2000
+            });
+            await toast.present();
+            return this.refresh(null);
         })
-        .then(() => {
-            this.events.publish('pages-settings');
-        })
-        .catch(() => {
-            this.events.publish('pages');
+        .catch(async () => {
+            const toast = await this.toastCtrl.create({
+                message: 'Username not available',
+                duration: 2000
+            });
+            await toast.present();
+        });
+    }
+
+    async checkUsername(username) {
+        return new Promise((resolve, reject) => {
+            this.ahttp.get('http://3.225.228.97/check-username?username=' + username)
+            .subscribe((data: any) => {
+                if(data.result) {
+                    return reject(username);
+                } else {
+                    return resolve(username);
+                }
+            });
         });
     }
 

@@ -83,6 +83,9 @@ export class CommunitiesPage implements OnInit {
                 return this.settingsService.reinit()
                 .then(() => {
                     return resolve();
+                })
+                .catch(() => {
+                    return reject();
                 });
             }
         })
@@ -115,12 +118,7 @@ export class CommunitiesPage implements OnInit {
                     .subscribe((res: any) => {
                         let item = res.result;
                         item.time = new Date(parseInt(item.txn.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
-                        for(var i=0; i < this.settingsService.static_groups.length; i++) {
-                            if(this.settingsService.static_groups[i].rid === item.txn.requester_rid) {
-                                this.rootGroup = this.settingsService.static_groups[i];
-                                break;
-                            }
-                        }
+                        this.rootGroup = this.settingsService.static_groups_by_rid[item.txn.requester_rid];
                         let fauxGroups = [];
                         fauxGroups.push({group: this.rootGroup, data: [item]});
                         return resolve(fauxGroups);
@@ -185,7 +183,7 @@ export class CommunitiesPage implements OnInit {
             this.groups = this.groupsPrepare;
         })
         .catch((err) => {
-          this.navCtrl.navigateRoot('/');
+          this.navCtrl.navigateRoot('/identity');
         });
     }
 

@@ -1,3 +1,20 @@
 a {
     cursor: pointer;
 }
+
+ion-card {
+    width: 250px;
+    min-height: 190px;
+}
+ion-card-content > div {
+    min-height: 75px;
+    font-size: 14px;
+    color: black;
+}
+ion-card-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+ion-col {
+    padding-left: 0;
+}

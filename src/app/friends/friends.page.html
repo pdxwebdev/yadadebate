@@ -1,8 +1,15 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>friends</ion-title>
-  </ion-toolbar>
-</ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button>
+              <ion-icon src='/appvotestatic/svg/md-menu.svg'></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>Friends</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
 <ion-content class="ion-padding">
   <div *ngIf="items && items.length == 0">

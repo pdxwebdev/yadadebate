@@ -1,8 +1,16 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>communities</ion-title>
-  </ion-toolbar>
-</ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button>
+              <ion-icon src='/appvotestatic/svg/md-menu.svg'></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title *ngIf="!params.id">Trending communities</ion-title>
+        <ion-title *ngIf="params.id">Community</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
 <ion-content class="ion-padding">
   <ion-list>

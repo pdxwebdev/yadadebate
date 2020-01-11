@@ -51,22 +51,30 @@ export class PeerService {
         return this.storage.get('node')
         .then((node) => {
             return new Promise((resolve2, reject2) => {
-                var seedPeer = '';
-                if (node && !this.failedSeedPeers.has(node)) {
-                    this.settingsService.remoteSettingsUrl = node;
-                } else {
-                    var min = 0; 
-                    var max = this.seeds.length - 1;
-                    var number = Math.floor(Math.random() * (+max - +min)) + +min;
-                    if (!this.seeds[number]) return reject(false);
-                    seedPeer = 'http://' + this.seeds[number]['host'] + ':' + this.seeds[number]['port'];
-                    while (this.failedSeedPeers.has(seedPeer)) {
-                        number = Math.floor(Math.random() * (+max - +min)) + +min;
+                try{
+                    var seedPeer = '';
+                    if (node && !this.failedSeedPeers.has(node)) {
+                        this.settingsService.remoteSettingsUrl = node;
+                    } else {
+                        var min = 0; 
+                        var max = this.seeds.length - 1;
+                        var number = Math.floor(Math.random() * (+max - +min)) + +min;
                         if (!this.seeds[number]) return reject(false);
                         seedPeer = 'http://' + this.seeds[number]['host'] + ':' + this.seeds[number]['port'];
+                        while (this.failedSeedPeers.has(seedPeer)) {
+                            number = Math.floor(Math.random() * (+max - +min)) + +min;
+                            if (!this.seeds[number]) return reject(false);
+                            seedPeer = 'http://' + this.seeds[number]['host'] + ':' + this.seeds[number]['port'];
+                        }
                     }
+                    return resolve2(seedPeer);
                 }
-                return resolve2(seedPeer);
+                catch(err) {
+                    return reject2();
+                }
+            })
+            .catch(() => {
+                return reject();
             })
         })
         .then((seedPeer) => {
@@ -110,6 +118,7 @@ export class PeerService {
             this.settingsService.remoteSettings = {};
             this.settingsService.remoteSettingsUrl = null;
             this.loading = false;
+            return reject();
             //this.storage.remove('node');
             // setTimeout(() => {
             //     this.peerRoutine(resolve, reject);

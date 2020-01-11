@@ -11,6 +11,10 @@ export class SettingsService {
     seeds = [];
     tokens = {};
     static_groups = [];
+    static_groups_by_bulletin_secret = {};
+    static_groups_by_rid = {};
+    groups_by_bulletin_secret = {};
+    topics_by_bulletin_secret = {};
     constructor(
         public storage: Storage
     ) {
@@ -44,6 +48,12 @@ export class SettingsService {
                 }
             ]
         }];
+        for (var i=0; i < this.static_groups.length; i++) {
+            this.static_groups_by_bulletin_secret[this.static_groups[i]['relationship']['their_bulletin_secret']] = this.static_groups[i];
+        }
+        for (var i=0; i < this.static_groups.length; i++) {
+            this.static_groups_by_rid[this.static_groups[i]['rid']] = this.static_groups[i];
+        }
     }
 
     reinit() {

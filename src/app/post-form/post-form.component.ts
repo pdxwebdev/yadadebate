@@ -85,9 +85,9 @@ export class PostFormComponent implements OnInit {
         idType = 'group';
         break;
     }
-    let result = await new Promise((resolve, reject) => {
-      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + this.settingsService.static_groups[0].rid + '&username=' + $event.substr(1) + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret + '&id_type=' + idType)
-      .subscribe((data: any) => {
+    return await this.checkUsername($event.substr(1), idType)
+    .then((data: any) => {
+      return new Promise((resolve, reject) => {
         let items = [];
         for(var i=0; i < data.length; i++) {
           let item = data[i];
@@ -102,12 +102,23 @@ export class PostFormComponent implements OnInit {
             mentionConfigs[i].items = items;
           }
         }
-        this.mentionConfig = {
-            mentions: mentionConfigs
-        }
+        resolve(mentionConfigs);
+      });
+    })
+    .then((mentionConfigs) => {
+      this.mentionConfig = {
+          mentions: mentionConfigs
+      }
+    });
+  }
+
+  checkUsername(username, idType) {
+    return new Promise((resolve, reject) => {
+      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + this.settingsService.static_groups[0].rid + '&username=' + username + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret + '&id_type=' + idType)
+      .subscribe((data: any) => {
+        return resolve(data);
       });
     });
-    return result;
   }
 
   selectedGroup(e) {
@@ -139,28 +150,39 @@ export class PostFormComponent implements OnInit {
         if (this.groupChatText.indexOf(':') >= 0) {
           var startpos = this.groupChatText.indexOf(':');
           var untilEndTest = this.groupChatText.substr(startpos);
-          var endpos = this.groupChatText.indexOf(' ');
-          if (endpos > startpos) {
+          var endpos = this.groupChatText.substr(startpos).indexOf(' ');
+          if (startpos + endpos > startpos) {
             var segment = this.groupChatText.substr(startpos, endpos);
           } else {
             var segment = this.groupChatText.substr(startpos);
           }
-          if (startpos + untilEndTest.length === segment.length) {
-            if (untilEndTest.length > 4) {
-              return this.groupService.createGroup(this.parentGroup, untilEndTest.substr(1))
+          return this.checkUsername(segment.substr(1), 'group')
+          .then((data: any) => {
+            let items = [];
+            for(var i=0; i < data.length; i++) {
+              let item = data[i];
+              if (item['txn']['relationship']['their_username'].toLowerCase() === segment.substr(1).toLowerCase()) {
+                this.group = item['txn'];
+                return resolve();
+              }
+            }
+            if (startpos + untilEndTest.length === segment.length) {
+              if (untilEndTest.length > 4) {
+                return this.groupService.createGroup(this.parentGroup, untilEndTest.substr(1))
+                .then((group) => {
+                  this.group = group;
+                  return resolve();
+                });
+              }
+            }
+            if (segment.length > 4) {
+              return this.groupService.createGroup(this.parentGroup, segment.substr(1))
               .then((group) => {
                 this.group = group;
                 return resolve();
               });
             }
-          }
-          if (segment.length > 4) {
-            return this.groupService.createGroup(this.parentGroup, segment.substr(1))
-            .then((group) => {
-              this.group = group;
-              return resolve();
-            });
-          }
+          })
         } else {
           const toast = await this.toastCtrl.create({
               message: 'Missing :group. Preceed with colon symbol and must be 4 characters minimum',
@@ -179,28 +201,39 @@ export class PostFormComponent implements OnInit {
           if (this.groupChatText.indexOf('#') >= 0) {
             var startpos = this.groupChatText.indexOf('#');
             var untilEndTest = this.groupChatText.substr(startpos);
-            var endpos = this.groupChatText.indexOf(' ');
-            if (endpos > startpos) {
+            var endpos = this.groupChatText.substr(startpos).indexOf(' ');
+            if (startpos + endpos > startpos) {
               var segment = this.groupChatText.substr(startpos, endpos);
             } else {
               var segment = this.groupChatText.substr(startpos);
             }
-            if (startpos + untilEndTest.length === segment.length) {
-              if (untilEndTest.length > 4) {
-                return this.topicService.createTopic(this.parentGroup, untilEndTest.substr(1))
+            return this.checkUsername(segment.substr(1), 'topic')
+            .then((data: any) => {
+              let items = [];
+              for(var i=0; i < data.length; i++) {
+                let item = data[i];
+                if (item['txn']['relationship']['their_username'].toLowerCase() === segment.substr(1).toLowerCase()) {
+                  this.topic = item['txn'];
+                  return resolve();
+                }
+              }
+              if (startpos + untilEndTest.length === segment.length) {
+                if (untilEndTest.length > 4) {
+                  return this.topicService.createTopic(this.parentGroup, untilEndTest.substr(1))
+                  .then((topic) => {
+                    this.topic = topic;
+                    return resolve(); 
+                  });
+                }
+              }
+              if (segment.length > 4) {
+                return this.topicService.createTopic(this.parentGroup, segment.substr(1))
                 .then((topic) => {
                   this.topic = topic;
                   return resolve(); 
                 });
               }
-            }
-            if (segment.length > 4) {
-              return this.topicService.createTopic(this.parentGroup, segment.substr(1))
-              .then((topic) => {
-                this.topic = topic;
-                return resolve(); 
-              });
-            }
+            });
           } else {
             const toast = await this.toastCtrl.create({
                 message: 'Missing #topic. Preceed with hash symbol and must be 4 characters minimum',
@@ -295,7 +328,7 @@ export class PostFormComponent implements OnInit {
               .then(() => {
                 return new Promise((resolve, reject) => {
                   let rid = this.group.rid;
-                  this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?rid=' + rid)
+                  return this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?rid=' + rid)
                   .subscribe((data: any) => {
                       resolve(data.results);
                   },
@@ -305,7 +338,7 @@ export class PostFormComponent implements OnInit {
                 });
               }).then(() => {
                   this.groupChatText = '';
-                  this.parentComponent.ngOnInit();
+                  this.parentComponent.navCtrl.navigateForward('/post?id=' + this.transactionService.transaction.id + '&cardType=topic')
                   this.modalCtrl.dismiss();
               })
               .catch(async (err) => {
