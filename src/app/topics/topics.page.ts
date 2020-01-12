@@ -119,9 +119,9 @@ export class TopicsPage implements OnInit {
                 for(var i=0; i < this.settingsService.static_groups.length; i++) {
                     var group = this.settingsService.static_groups[i];
                     promises.push(new Promise((resolve2, reject) => {
-                        this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/ns-lookup?requester_rid=' + group.rid + '&id_type=topic&bulletin_secret=' + group.relationship.their_bulletin_secret)
-                        .subscribe((data) => {
-                            return resolve2({group: group, data: data});
+                        this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/trending-topics?requester_rid=' + group.rid + '&id_type=topic&bulletin_secret=' + group.relationship.their_bulletin_secret)
+                        .subscribe((data: any) => {
+                            return resolve2({group: group, data: data.results});
                         });
                     }));
                 }
@@ -136,16 +136,19 @@ export class TopicsPage implements OnInit {
                 var promiseResult = promiseResults[i];
                 if (!items[promiseResult.group['rid']]) items[promiseResult.group['rid']] = [];
                 for (let j = 0; j < promiseResult.data.length; j++) {
-                    if(!promiseResult.data[j]['txn']['relationship']['their_username'] || 
-                        promiseResult.data[j]['txn']['rid'] == promiseResult.data[j]['txn']['requested_rid'] ||
-                        promiseResult.data[j]['txn']['relationship']['topic'] !== true) 
+                    if(!promiseResult.data[j]['relationship']['their_username'] || 
+                        promiseResult.data[j]['rid'] == promiseResult.data[j]['requested_rid'] ||
+                        promiseResult.data[j]['relationship']['topic'] !== true) 
                             continue
                     var rootGroup = {
                         group: promiseResult.group,
-                        transaction: promiseResult.data[j]['txn']
+                        transaction: promiseResult.data[j]
                     }
                     items[promiseResult.group['rid']].push(rootGroup);
                 }
+                items[promiseResult.group['rid']].sort((a, b) => {
+                    return (a.transaction.order < b.transaction.order) ? 1 : -1
+                });
             }
             resolve(items);
         })
