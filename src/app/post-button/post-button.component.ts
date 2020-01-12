@@ -20,7 +20,9 @@ export class PostButtonComponent implements OnInit {
 
   ngOnInit() {}
 
-  async modal() {
+  async modal(e) {
+    e.preventDefault();
+    e.stopPropagation();
     let modal = await this.modalCtrl.create({
       component: PostFormComponent,
       componentProps: {
@@ -29,7 +31,8 @@ export class PostButtonComponent implements OnInit {
         group: this.group,
         topic: this.topic,
         post: this.post
-      }
+      },
+      cssClass: 'my-custom-modal-css'
     });
     return await modal.present();
   }

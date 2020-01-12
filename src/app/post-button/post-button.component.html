@@ -1,6 +1,6 @@
-<ion-button (click)="modal()" color="primary" *ngIf="!post">
+<ion-button (click)="modal($event)" color="primary" *ngIf="!post">
   <ion-icon src="/appvotestatic/svg/md-create.svg" primary></ion-icon> Create {{staticGroup.relationship.their_username.toLowerCase()}} post
 </ion-button>
-<ion-button (click)="modal()" color="primary" *ngIf="post" fill="outline">
+<ion-button (click)="modal($event)" color="primary" *ngIf="post" fill="outline">
   <ion-icon src="/appvotestatic/svg/md-create.svg" primary></ion-icon> Reply
 </ion-button>

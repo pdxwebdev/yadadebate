@@ -8,6 +8,10 @@ import { GroupService } from '../group.service';
 import { WalletService } from '../yadalib/wallet.service';
 import { TransactionService } from '../yadalib/transaction.service';
 import { GraphService } from '../yadalib/graph.service';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
+import { FileChooser } from '@ionic-native/file-chooser/ngx';
+import { File } from '@ionic-native/file';
+import { IOSFilePicker } from '@ionic-native/file-picker/ngx';
 
 @Component({
   selector: 'app-post-form',
@@ -23,6 +27,9 @@ export class PostFormComponent implements OnInit {
   groupChatText: any;
   @Input() parentGroup;
   @Input() post
+  fileData: any;
+  fileName: any;
+  fileType: any;
   constructor(
     private settingsService: SettingsService,
     private bulletinSecretService: BulletinSecretService,
@@ -35,7 +42,9 @@ export class PostFormComponent implements OnInit {
     private transactionService: TransactionService,
     private graphService: GraphService,
     private navCtrl: NavController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private fileChooser: FileChooser,
+    private transfer: FileTransfer
   ) { }
 
   ngOnInit() {
@@ -305,7 +314,7 @@ export class PostFormComponent implements OnInit {
                   } else {
                     this.post = {};
                   }
-                  return this.transactionService.generateTransaction({
+                  let txn_data = {
                       relationship: {
                           their_username: this.group.relationship.their_username,
                           their_bulletin_secret: this.group.relationship.their_bulletin_secret,
@@ -321,7 +330,12 @@ export class PostFormComponent implements OnInit {
                       rid: this.group.rid,
                       requester_rid: this.group.requester_rid,
                       requested_rid: this.group.requested_rid
-                  });
+                  }
+                  if(this.fileName) {
+                    txn_data['relationship']['groupChatFileName'] = this.fileName;
+                    txn_data['relationship']['groupChatFileType'] = this.fileType;
+                  }
+                  return this.transactionService.generateTransaction(txn_data);
               }).then((txn) => {
                   return this.transactionService.sendTransaction();
               })
@@ -365,6 +379,33 @@ export class PostFormComponent implements OnInit {
     if(this.group && this.groupChatText.indexOf(this.group.relationship.their_username) === -1) {
       this.group = null;
     }
+  }
+
+  async fileProgress(fileInput: any) {
+      this.fileData = <File>fileInput.target.files[0];
+      if(this.fileData.size > 2000000) {
+        const toast = await this.toastCtrl.create({
+            message: 'File too large. 2MB max',
+            duration: 2000
+        });
+        await toast.present();
+        fileInput.target.value = '';
+        return
+      }
+      this.fileName = 'fileupload-' + Date.now() + '-' + this.fileData.name;
+      this.fileType = this.fileData.type;
+      const formData = new FormData();
+      formData.append('file', this.fileData);
+      this.ahttp.post(this.settingsService.remoteSettings.baseUrl + '/sia-upload?filename=' + this.fileName, formData)
+      .subscribe((res: any) => {
+        console.log(res);
+        if (res.status === 'error') {
+          this.fileName = '';
+          this.fileType = ''; 
+          fileInput.target.value = '';
+        }
+        //this.uploadedFilePath = res.data.filePath;
+      })
   }
 
 }

@@ -6,7 +6,24 @@
 }
 .back {
     position: fixed;
+    right: 255px;
     bottom: 20px;
-    right: 135px;
     width: 100px;
+}
+.upload {
+    position: fixed;
+    right: 135px;
+    bottom: 20px;
+    width: 100px;
+}
+#file-input {
+    opacity: 0;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    z-index: 999;
+}
+textarea {
+    border: 0;
+    width: 100%;
 }

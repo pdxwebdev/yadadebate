@@ -13,6 +13,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { HttpClientModule } from '@angular/common/http';
 import { Firebase } from '@ionic-native/firebase/ngx';
+import { FileChooser } from '@ionic-native/file-chooser/ngx';
+import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { Firebase } from '@ionic-native/firebase/ngx';
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    Firebase
+    Firebase,
+    FileChooser,
+    FileTransfer
   ],
   bootstrap: [AppComponent]
 })

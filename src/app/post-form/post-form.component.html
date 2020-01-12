@@ -1,20 +1,25 @@
 <ion-content class="ion-padding">
-  <ion-textarea
-   placeholder="What's on your mind? 'Identify as a :turtle and I'm talking about #turtles and I think other turtles need to come out of their shell!''"
+  <ion-note *ngIf="topic && group">I identify as a :{{group.relationship.their_username}} and I'm talking about #{{topic.relationship.their_username}}</ion-note>
+  <textarea
+   placeholder="What's on your mind? 'I identify as a :turtle and I'm talking about #turtles and I think other turtles need to come out of their shell!''"
    [mentionConfig]="mentionConfig"
    (keyup)="change()"
    (searchTerm)="search($event)"
    [(ngModel)]="groupChatText"
    maxlength="280"
-   rows="25"
-  ></ion-textarea>
-  <ion-button (click)="closeModal()" class="back" fill="outline">
-    <ion-icon slot="icon-only" src="/appvotestatic/svg/md-arrow-back.svg"></ion-icon>&nbsp;Back
-  </ion-button>
-  <ion-button button (click)="submit()" class="post" fill="outline">
-      <ion-icon slot="icon-only" src="/appvotestatic/svg/md-create.svg"></ion-icon>&nbsp;Post
-  </ion-button>
-  <ul>
-    <li *ngIf="topic && group">I identify with {{group.relationship.their_username}} and I'm talking about {{topic.relationship.their_username}}</li>
-  </ul>
+   rows="3"
+  ></textarea>
+  <form action="." method="POST">
+    <ion-button class="upload" fill="outline">
+        <input type="file" (change)="fileProgress($event)" id="file-input" style="opacity: 0" #fileInp>
+      <ion-icon slot="icon-only" src="/appvotestatic/svg/md-arrow-up.svg"></ion-icon>&nbsp;Upload
+    </ion-button>
+    <ion-button (click)="closeModal()" class="back" fill="outline">
+      <ion-icon slot="icon-only" src="/appvotestatic/svg/md-arrow-back.svg"></ion-icon>&nbsp;Back
+    </ion-button>
+    <ion-button button (click)="submit()" class="post" fill="outline">
+        <ion-icon slot="icon-only" src="/appvotestatic/svg/md-create.svg"></ion-icon>&nbsp;Post
+    </ion-button>
+  </form>
+  <ion-note *ngIf="fileName">File: {{fileName}}</ion-note>
 </ion-content>

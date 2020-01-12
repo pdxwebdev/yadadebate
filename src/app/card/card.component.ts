@@ -23,11 +23,10 @@ export class CardComponent implements OnInit {
     private navCtrl: NavController,
     public ahttp: HttpClient,
     public settingsService: SettingsService
-  ) { 
-    this.thisComponent = this.parentComponent;
-  }
+  ) { }
 
   ngOnInit() {
+    this.thisComponent = this.parentComponent;
     this.group = this.settingsService.groups_by_bulletin_secret[this.item.relationship.their_bulletin_secret];
     if(!this.group) {
       this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
