@@ -146,63 +146,70 @@ export class PostFormComponent implements OnInit {
   }
 
   async submit() {
-    return new Promise(async (resolve, reject) => {
-      var re = /:/g
-      if(((this.groupChatText || '').match(re) || []).length > 1) {
-        return reject('Only one group can be specified.')
-      }
-      var re = /#/g
-      if (((this.groupChatText || '').match(re) || []).length > 1) {
-        return reject('Only one topic can be specified.')
-      }
-      if (!this.group) {
-        if (this.groupChatText.indexOf(':') >= 0) {
-          var startpos = this.groupChatText.indexOf(':');
-          var untilEndTest = this.groupChatText.substr(startpos);
-          var endpos = this.groupChatText.substr(startpos).indexOf(' ');
-          if (startpos + endpos > startpos) {
-            var segment = this.groupChatText.substr(startpos, endpos);
-          } else {
-            var segment = this.groupChatText.substr(startpos);
-          }
-          return this.checkUsername(segment.substr(1), 'group')
-          .then((data: any) => {
-            let items = [];
-            for(var i=0; i < data.length; i++) {
-              let item = data[i];
-              if (item['txn']['relationship']['their_username'].toLowerCase() === segment.substr(1).toLowerCase()) {
-                this.group = item['txn'];
-                return resolve();
-              }
+
+    return this.walletService.get()
+    .then(() => {
+      return this.graphService.getInfo();
+    })
+    .then(() => {
+      return new Promise(async (resolve, reject) => {
+        var re = /:/g
+        if(((this.groupChatText || '').match(re) || []).length > 1) {
+          return reject('Only one group can be specified.')
+        }
+        var re = /#/g
+        if (((this.groupChatText || '').match(re) || []).length > 1) {
+          return reject('Only one topic can be specified.')
+        }
+        if (!this.group) {
+          if (this.groupChatText.indexOf(':') >= 0) {
+            var startpos = this.groupChatText.indexOf(':');
+            var untilEndTest = this.groupChatText.substr(startpos);
+            var endpos = this.groupChatText.substr(startpos).indexOf(' ');
+            if (startpos + endpos > startpos) {
+              var segment = this.groupChatText.substr(startpos, endpos);
+            } else {
+              var segment = this.groupChatText.substr(startpos);
             }
-            if (startpos + untilEndTest.length === segment.length) {
-              if (untilEndTest.length > 4) {
-                return this.groupService.createGroup(this.parentGroup, untilEndTest.substr(1))
+            return this.checkUsername(segment.substr(1), 'group')
+            .then((data: any) => {
+              let items = [];
+              for(var i=0; i < data.length; i++) {
+                let item = data[i];
+                if (item['txn']['relationship']['their_username'].toLowerCase() === segment.substr(1).toLowerCase()) {
+                  this.group = item['txn'];
+                  return resolve();
+                }
+              }
+              if (startpos + untilEndTest.length === segment.length) {
+                if (untilEndTest.length > 4) {
+                  return this.groupService.createGroup(this.parentGroup, untilEndTest.substr(1))
+                  .then((group) => {
+                    this.group = group;
+                    return resolve();
+                  });
+                }
+              }
+              if (segment.length > 4) {
+                return this.groupService.createGroup(this.parentGroup, segment.substr(1))
                 .then((group) => {
                   this.group = group;
                   return resolve();
                 });
               }
-            }
-            if (segment.length > 4) {
-              return this.groupService.createGroup(this.parentGroup, segment.substr(1))
-              .then((group) => {
-                this.group = group;
-                return resolve();
-              });
-            }
-          })
+            })
+          } else {
+            const toast = await this.toastCtrl.create({
+                message: 'Missing :group. Preceed with colon symbol and must be 4 characters minimum',
+                duration: 2000
+            });
+            await toast.present();
+            return;        
+          }
         } else {
-          const toast = await this.toastCtrl.create({
-              message: 'Missing :group. Preceed with colon symbol and must be 4 characters minimum',
-              duration: 2000
-          });
-          await toast.present();
-          return;        
+          return resolve();
         }
-      } else {
-        return resolve();
-      }
+      })
     })
     .then(async () => {
       return new Promise(async (resolve, reject) => {
@@ -279,10 +286,7 @@ export class PostFormComponent implements OnInit {
         {
           text: 'Confirm',
           handler: (data: any) => {
-              this.walletService.get()
-              .then(() => {
-                  return this.graphService.getFriends();
-              })
+              return this.graphService.getFriends()
               .then(() => {
                   return new Promise((resolve, reject) => {
                     this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/topic-conflict?topic_bulletin_secret=' + this.topic.relationship.their_bulletin_secret + '&requested_rid=' + this.group.requested_rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
@@ -342,7 +346,7 @@ export class PostFormComponent implements OnInit {
               .then(() => {
                 return new Promise((resolve, reject) => {
                   let rid = this.group.rid;
-                  return this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?rid=' + rid)
+                  return this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?no_cache=1&rid=' + rid)
                   .subscribe((data: any) => {
                       resolve(data.results);
                   },

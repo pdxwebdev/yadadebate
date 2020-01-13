@@ -65,7 +65,7 @@ export class PostPage implements OnInit {
         if (this.postCardListComponent) this.postCardListComponent.ngOnInit();
         if (this.params && this.params.id) {
           this.id = this.params.id.replace(/ /g, '+');
-          this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + this.id)
+          this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + this.id + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
           .subscribe((res: any) => {
             this.item = res.result;
             this.item.time = new Date(parseInt(this.item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
@@ -90,7 +90,6 @@ export class PostPage implements OnInit {
             }
             return resolve();
           });
-          this.getVotes(this.id);
         }
         if (this.params && this.params.cardType) {
           this.cardType = this.params.cardType;
@@ -111,7 +110,7 @@ export class PostPage implements OnInit {
   getReplies(rootGroup) {
     return new Promise((resolve, reject) => {
       var rid = rootGroup.transaction.id;
-      var url = '/replies?id=' + rid
+      var url = '/replies?id=' + rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret
       this.ahttp.get(this.settingsService.remoteSettings.baseUrl + url)
       .subscribe((data: any) => {
           resolve(data.results || []);
@@ -125,52 +124,16 @@ export class PostPage implements OnInit {
     });
   }
 
-  getVotes(id) {
-    this.votes[id] = 0;
-    return new Promise((resolve, reject) => {
-      this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/votes?id=' + id)
-      .subscribe((res: any) => {
-        this.votes[id] = this.votes[id] || 0;
-        var my_pub_key = this.bulletinSecretService.key.getPublicKeyBuffer().toString('hex');
-        for(var i=0; i < res.result.length; i++) {
-          if (res.result[i].public_key === my_pub_key) {
-            this.item.vote = 'upvote';
-            this.item.alreadyVoted = true;
-          }
-          this.votes[id] += 1;
-        }
-        return resolve();
-      });
-    })
-  }
-
   parseChats(rootGroup, data) {
     return new Promise((resolve, reject) => {
         rootGroup.transaction.posts = [];
         let chats = [];
-        rootGroup.transaction.votes = {};
         let chats_indexed = {};
         let name;
         for(var i=0; i < data.length; i++) {
           var chat = data[i];
           //if (this.listType !== 'replies' && chat.relationship.reply) continue;
           if (chat.relationship.their_username) name = chat.relationship.their_username;
-          if(chat.relationship.groupChatText.vote == 'upvote') {
-            if (!rootGroup.transaction.votes[chat.relationship.groupChatText.id]) rootGroup.transaction.votes[chat.relationship.groupChatText.id] = 0;
-            rootGroup.transaction.votes[chat.relationship.groupChatText.id] += 1;
-            if(!chats_indexed[chat.relationship.groupChatText.id]) {
-              chats_indexed[chat.relationship.groupChatText.id] = {};
-            }
-            if (chat.public_key === this.bulletinSecretService.key.getPublicKeyBuffer().toString('hex')) {
-              chats_indexed[chat.relationship.groupChatText.id].vote = 'upvote';
-              chats_indexed[chat.relationship.groupChatText.id].alreadyVoted = true;
-            }
-            if(!chats_indexed[chat.relationship.groupChatText.id].votes) {
-              chats_indexed[chat.relationship.groupChatText.id].votes = 0;
-            }
-            chats_indexed[chat.relationship.groupChatText.id].votes += 1;
-            continue;
-          }
           chat.time = new Date(parseInt(chat.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
           chats.push(chat);
           if (chats_indexed[chat.id]) {

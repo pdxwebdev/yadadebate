@@ -92,21 +92,21 @@ export class PeerService {
                 return resolve2();
             });
         })
-        .then(() => {
-            return new Promise((resolve2, reject2) => {
-                return this.walletService.get()
-                .then(() => {
-                    return resolve2();
-                })
-                .catch((err) => {
-                    this.failedConfigPeers.add(this.settingsService.remoteSettingsUrl);
-                    return reject2('config')
-                });
-            })
-        })
-        .then(() => {
-            return this.setupRelationship();
-        })
+        // .then(() => {
+        //     return new Promise((resolve2, reject2) => {
+        //         return this.walletService.get()
+        //         .then(() => {
+        //             return resolve2();
+        //         })
+        //         .catch((err) => {
+        //             this.failedConfigPeers.add(this.settingsService.remoteSettingsUrl);
+        //             return reject2('config')
+        //         });
+        //     })
+        // })
+        // .then(() => {
+        //     return this.setupRelationship();
+        // })
         .then(() => {
             this.peerLocked = true;
             return this.storage.set('node', this.settingsService.remoteSettingsUrl);

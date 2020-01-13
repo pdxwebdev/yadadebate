@@ -18,6 +18,8 @@ export class VoteComponent implements OnInit {
   @Input() votes: any;
   @Input() parentComponent: any;
   @Output() voteChanged = new EventEmitter();
+  topic: any;
+  group: any;
   constructor(
     private alertCtrl: AlertController,
     private transactionService: TransactionService,
@@ -29,14 +31,12 @@ export class VoteComponent implements OnInit {
     private settingsService: SettingsService
   ) { }
 
-  ngOnInit() {
-    if(!this.votes[this.item.id]) this.votes[this.item.id] = 0;
-  }
+  ngOnInit() { }
 
   async segmentChanged(ev: any, item: any) {
     ev.preventDefault();
     ev.stopPropagation();
-    if (item.alreadyVoted === true) {
+    if (item.already_voted === true) {
       const toast = await this.toastCtrl.create({
           message: "Can't change your vote.",
           duration: 2000,
@@ -45,13 +45,52 @@ export class VoteComponent implements OnInit {
       await toast.present();
       return false;
     }
-    this.vote(item)
+    return this.getTopic()
+    .then(() => {
+      return this.getGroup();
+    })
+    .then(() => {
+      this.vote(item);
+    })
     .catch(() => {
       console.log('canceled vote');
       item.prevVote = '';
       item.vote = '';
     });
-    return false;
+  }
+
+  getTopic() {
+    return new Promise((resolve, reject) => {
+      if (!this.item) return resolve();
+      this.topic = this.settingsService.topics_by_bulletin_secret[this.item.relationship.topic_bulletin_secret];
+      if(this.topic) {
+        return resolve();
+      } else {
+        this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.item.relationship.topic_bulletin_secret)
+        .subscribe((res: any) => {
+          this.settingsService.topics_by_bulletin_secret[this.item.relationship.topic_bulletin_secret] = res.result.txn;
+          this.topic = res.result.txn;
+          return resolve();
+        });
+      }
+    });
+  }
+
+  getGroup() {
+    return new Promise((resolve, reject) => {
+      if (!this.item) return resolve();
+      this.group = this.settingsService.groups_by_bulletin_secret[this.item.relationship.their_bulletin_secret];
+      if(this.group) {
+        return resolve()
+      } else {
+        this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.item.relationship.their_bulletin_secret)
+        .subscribe((res: any) => {
+          this.settingsService.groups_by_bulletin_secret[this.item.relationship.their_bulletin_secret] = res.result.txn;
+          this.group = res.result.txn;
+          return resolve();
+        });
+      }
+    });
   }
 
   async vote(item) {
@@ -113,6 +152,8 @@ export class VoteComponent implements OnInit {
                               vote: 'upvote',
                               id: item.id
                             },
+                            topic_bulletin_secret: this.topic.relationship.their_bulletin_secret,
+                            topic_username: this.topic.relationship.their_username,
                             my_bulletin_secret: this.bulletinSecretService.generate_bulletin_secret(),
                             my_username: this.bulletinSecretService.username
                         },
@@ -127,7 +168,7 @@ export class VoteComponent implements OnInit {
                 })
                 .then(() => {
                   return new Promise((resolve, reject) => {
-                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?rid=' + rid)
+                    this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?no_cache=1&rid=' + rid)
                     .subscribe((data: any) => {
                         resolve(data.results);
                     },
@@ -138,8 +179,8 @@ export class VoteComponent implements OnInit {
                 })
                 .then(() => {
                     this.groupChatText = '';
-                    this.votes[this.item.id] += 1;
-                    this.item.alreadyVoted = true;
+                    this.votes += 1;
+                    this.item.already_voted = true;
                     resolve();
                 })
                 .catch(async (err) => {

@@ -344,11 +344,11 @@ export class SettingsPage implements OnInit {
         .then(() => { 
             this.selectIdentity(this.bulletinSecretService.keyname.substr(this.prefix.length));
         })
-        .then(() => {
-            if (this.settingsService.remoteSettings['walletUrl']) {
-                return this.graphService.getInfo();
-            }
-        })
+        // .then(() => {
+        //     if (this.settingsService.remoteSettings['walletUrl']) {
+        //         return this.graphService.getInfo();
+        //     }
+        // })
         .then(async () => {
 
             const toast = await this.toastCtrl.create({

@@ -107,9 +107,9 @@ export class CommunitiesPage implements OnInit {
         .then((key) => {
             return this.bulletinSecretService.set(key);
         })
-        .then(() => {
-            this.graphService.getInfo()
-        })
+        // .then(() => {
+        //     this.graphService.getInfo()
+        // })
         .then(() => {
             return new Promise((resolve, reject) => {
                 if (this.params && this.params.id) {
@@ -227,7 +227,7 @@ export class CommunitiesPage implements OnInit {
                 }
                 if (chat.public_key === this.bulletinSecretService.key.getPublicKeyBuffer().toString('hex')) {
                   chats_indexed[chat.relationship.groupChatText.id].vote = 'upvote';
-                  chats_indexed[chat.relationship.groupChatText.id].alreadyVoted = true;
+                  chats_indexed[chat.relationship.groupChatText.id].already_voted = true;
                 }
                 if(!chats_indexed[chat.relationship.groupChatText.id].votes) {
                   chats_indexed[chat.relationship.groupChatText.id].votes = 0;

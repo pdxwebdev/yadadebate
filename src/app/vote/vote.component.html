@@ -1,8 +1,8 @@
-<ion-button expand="block" value="upvote" (click)="segmentChanged($event, item)" fill="outline" *ngIf="!item.alreadyVoted">
+<ion-button expand="block" value="upvote" (click)="segmentChanged($event, item)" fill="outline" *ngIf="!item.already_voted">
   <ion-icon src="/appvotestatic/svg/md-heart.svg"></ion-icon>&nbsp;
-  <ion-label>{{votes[item.id]}}</ion-label>
+  <ion-label>{{votes}}</ion-label>
 </ion-button>
-<ion-button expand="block" value="upvote" (click)="segmentChanged($event, item)" *ngIf="item.alreadyVoted">
+<ion-button expand="block" value="upvote" (click)="segmentChanged($event, item)" *ngIf="item.already_voted">
   <ion-icon src="/appvotestatic/svg/md-heart.svg"></ion-icon>&nbsp;
-  <ion-label>{{votes[item.id]}}</ion-label>
+  <ion-label>{{votes}}</ion-label>
 </ion-button>

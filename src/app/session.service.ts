@@ -62,9 +62,9 @@ export class SessionService {
     .then((key) => {
         return this.bulletinSecretService.set(key);
     })
-    .then(() => {
-        return this.graphService.getInfo()
-    })
+    // .then(() => {
+    //     return this.graphService.getInfo()
+    // })
     .catch(() => {
         
     })

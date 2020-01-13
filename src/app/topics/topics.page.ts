@@ -86,9 +86,9 @@ export class TopicsPage implements OnInit {
     .then((key) => {
         return this.bulletinSecretService.set(key);
     })
-    .then(() => {
-        this.graphService.getInfo()
-    })
+    // .then(() => {
+    //     this.graphService.getInfo()
+    // })
     .then(() => {
       return new Promise((resolve, reject) => {
         this.route.queryParams.subscribe((params) => {
@@ -186,7 +186,7 @@ export class TopicsPage implements OnInit {
 
       return new Promise((resolve, reject) => {
         let rid = rootGroup.transaction.relationship.their_bulletin_secret;
-        let url = '/topics?topic_bulletin_secret=' + rid
+        let url = '/topics?topic_bulletin_secret=' + rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret
         this.ahttp.get(this.settingsService.remoteSettings.baseUrl + url)
         .subscribe((data: any) => {
             resolve(data.results || []);
@@ -211,22 +211,7 @@ export class TopicsPage implements OnInit {
           var chat = data[i];
           //if (this.listType !== 'replies' && chat.relationship.reply) continue;
           if (chat.relationship.their_username) name = chat.relationship.their_username;
-          if(chat.relationship.groupChatText.vote == 'upvote') {
-            if (!rootGroup.transaction.votes[chat.relationship.groupChatText.id]) rootGroup.transaction.votes[chat.relationship.groupChatText.id] = 0;
-            rootGroup.transaction.votes[chat.relationship.groupChatText.id] += 1;
-            if(!chats_indexed[chat.relationship.groupChatText.id]) {
-              chats_indexed[chat.relationship.groupChatText.id] = {};
-            }
-            if (chat.public_key === this.bulletinSecretService.key.getPublicKeyBuffer().toString('hex')) {
-              chats_indexed[chat.relationship.groupChatText.id].vote = 'upvote';
-              chats_indexed[chat.relationship.groupChatText.id].alreadyVoted = true;
-            }
-            if(!chats_indexed[chat.relationship.groupChatText.id].votes) {
-              chats_indexed[chat.relationship.groupChatText.id].votes = 0;
-            }
-            chats_indexed[chat.relationship.groupChatText.id].votes += 1;
-            continue;
-          }
+
           chat.time = new Date(parseInt(chat.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
           chats.push(chat);
           if (chats_indexed[chat.id]) {
