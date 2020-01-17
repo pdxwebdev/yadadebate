@@ -11,6 +11,10 @@
   </ion-card-header>
   <ion-card-content>
     <div>{{item.relationship.groupChatText || 'Anonymous'}}</div>
+    <ion-card-subtitle *ngIf="item.replies">{{item.replies}} 
+      <span *ngIf="item.replies === 0 || item.replies > 1">replies</span>
+      <span *ngIf="item.replies === 1">reply</span>
+    </ion-card-subtitle>
     <ion-grid>
       <ion-row>
         <ion-col size="6">
@@ -44,6 +48,10 @@
   </ion-card-header>
   <ion-card-content>
     <div>{{item.relationship.groupChatText || 'Anonymous'}}</div>
+    <ion-card-subtitle *ngIf="item.replies">{{item.replies}} 
+      <span *ngIf="item.replies === 0 || item.replies > 1">replies</span>
+      <span *ngIf="item.replies === 1">reply</span>
+    </ion-card-subtitle>
     <ion-grid>
       <ion-row>
         <ion-col size="6">
@@ -76,6 +84,10 @@
   </ion-card-header>
   <ion-card-content>
     <div>{{item.relationship.groupChatText || 'Anonymous'}}</div>
+    <ion-card-subtitle *ngIf="item.replies">{{item.replies}} 
+      <span *ngIf="item.replies === 0 || item.replies > 1">replies</span>
+      <span *ngIf="item.replies === 1">reply</span>
+    </ion-card-subtitle>
     <ion-grid>
       <ion-row>
         <ion-col size="6">

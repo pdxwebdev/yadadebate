@@ -24,7 +24,7 @@ import { FileTransfer } from '@ionic-native/file-transfer/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    IonicStorageModule.forRoot(),
+    IonicStorageModule.forRoot({ name: '__mydb', driverOrder: ['sqlite', 'websql', 'indexeddb'] }),
     HttpClientModule,
     FormsModule
   ],

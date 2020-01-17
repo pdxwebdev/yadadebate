@@ -114,8 +114,7 @@ export class SettingsPage implements OnInit {
             })
             .then(() => {
                 if (favorites.length == 0) {
-                    var host = 'http://3.225.228.97';
-                    //var host = 'http://0.0.0.0';
+                    var host = 'http://0.0.0.0:5000';
                     this.storage.set('favorites-Home', host);
                     this.storage.set('node', host);
                     favorites.push({label: 'Home', url: host});
@@ -369,7 +368,7 @@ export class SettingsPage implements OnInit {
 
     async checkUsername(username) {
         return new Promise((resolve, reject) => {
-            this.ahttp.get('http://3.225.228.97/check-username?username=' + username)
+            this.ahttp.get('http://0.0.0.0:5000/check-username?username=' + username)
             .subscribe((data: any) => {
                 if(data.result) {
                     return reject(username);

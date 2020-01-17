@@ -22,8 +22,7 @@ export class SessionService {
     public ahttp: HttpClient,
     public toastCtrl: ToastController
   ) { 
-      this.host = 'http://3.225.228.97';
-      //this.host = 'http://0.0.0.0:5000';
+      this.host = 'http://0.0.0.0:5000';
   }
 
   init() {

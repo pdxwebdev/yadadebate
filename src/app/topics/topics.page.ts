@@ -10,6 +10,7 @@ import { promise } from 'protractor';
 import { PostCardListComponent } from '../post-card-list/post-card-list.component';
 import { Storage } from '@ionic/storage';
 import { PeerService } from '../yadalib/peer.service';
+import { SessionService } from '../session.service';
 
 
 declare var foobar;
@@ -44,7 +45,8 @@ export class TopicsPage implements OnInit {
     private ahttp: HttpClient,
     private navCtrl: NavController,
     public storage: Storage,
-    public peerService: PeerService
+    public peerService: PeerService,
+    public sessionService: SessionService
   ) { 
     this.topicGroups = {};
     this.thisComponent = this;
@@ -58,37 +60,8 @@ export class TopicsPage implements OnInit {
   }
 
   buildView() {
-    return new Promise((resolve, reject) => {
-        if(this.settingsService.remoteSettings.baseUrl) {
-            return resolve();
-        } else {
-            return this.settingsService.reinit()
-            .then(() => {
-                return resolve();
-            });
-        }
-    })
-    .then(() => {
-        return this.peerService.go()
-    })
-    .then(() => {
-        return this.storage.get('last-keyname')
-    })
-    .then((key) => {
-        return new Promise((resolve, reject) => {
-            if(key) {
-                return resolve(key)
-            } else {
-                return reject();
-            }
-        });
-    })
-    .then((key) => {
-        return this.bulletinSecretService.set(key);
-    })
-    // .then(() => {
-    //     this.graphService.getInfo()
-    // })
+    
+    this.sessionService.init()
     .then(() => {
       return new Promise((resolve, reject) => {
         this.route.queryParams.subscribe((params) => {
@@ -103,9 +76,9 @@ export class TopicsPage implements OnInit {
                 this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-topic?id=' + this.id)
                 .subscribe((res: any) => {
                     let item = res.result;
-                    item.time = new Date(parseInt(item.txn.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
+                    item.time = new Date(parseInt(item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
                     for(var i=0; i < this.settingsService.static_groups.length; i++) {
-                        if(this.settingsService.static_groups[i].rid === item.txn.requester_rid) {
+                        if(this.settingsService.static_groups[i].rid === item.requester_rid) {
                             this.parentGroup = this.settingsService.static_groups[i];
                             break;
                         }

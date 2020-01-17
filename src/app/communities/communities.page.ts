@@ -19,6 +19,7 @@ import { IonRadioGroup } from '@ionic/angular';
 import { GroupService } from '../group.service';
 import { PostCardListComponent } from '../post-card-list/post-card-list.component';
 import { PeerService } from '../yadalib/peer.service';
+import { SessionService } from '../session.service';
 
 declare var Base64;
 declare var foobar;
@@ -61,7 +62,8 @@ export class CommunitiesPage implements OnInit {
         public toastCtrl: ToastController,
         public router: Router,
         public groupService: GroupService,
-        public peerService: PeerService
+        public peerService: PeerService,
+        public sessionService: SessionService
     ) {
         this.groups = {};
         this.thisComponent = this;
@@ -76,40 +78,7 @@ export class CommunitiesPage implements OnInit {
     }
     
     buildView() {
-        return new Promise((resolve, reject) => {
-            if(this.settingsService.remoteSettings.baseUrl) {
-                return resolve();
-            } else {
-                return this.settingsService.reinit()
-                .then(() => {
-                    return resolve();
-                })
-                .catch(() => {
-                    return reject();
-                });
-            }
-        })
-        .then(() => {
-            return this.peerService.go()
-        })
-        .then(() => {
-            return this.storage.get('last-keyname')
-        })
-        .then((key) => {
-            return new Promise((resolve, reject) => {
-                if(key) {
-                    return resolve(key)
-                } else {
-                    return reject();
-                }
-            });
-        })
-        .then((key) => {
-            return this.bulletinSecretService.set(key);
-        })
-        // .then(() => {
-        //     this.graphService.getInfo()
-        // })
+        this.sessionService.init()
         .then(() => {
             return new Promise((resolve, reject) => {
                 if (this.params && this.params.id) {
@@ -117,8 +86,8 @@ export class CommunitiesPage implements OnInit {
                     this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-group?id=' + this.id)
                     .subscribe((res: any) => {
                         let item = res.result;
-                        item.time = new Date(parseInt(item.txn.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
-                        this.rootGroup = this.settingsService.static_groups_by_rid[item.txn.requester_rid];
+                        item.time = new Date(parseInt(item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');
+                        this.rootGroup = this.settingsService.static_groups_by_rid[item.requester_rid];
                         let fauxGroups = [];
                         fauxGroups.push({group: this.rootGroup, data: [item]});
                         return resolve(fauxGroups);
@@ -194,7 +163,7 @@ export class CommunitiesPage implements OnInit {
   
         return new Promise((resolve, reject) => {
           let rid = rootGroup.transaction.rid;
-          let url = '/groups?rid=' + rid
+          let url = '/groups?rid=' + rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret
           this.ahttp.get(this.settingsService.remoteSettings.baseUrl + url)
           .subscribe((data: any) => {
               resolve(data.results || []);

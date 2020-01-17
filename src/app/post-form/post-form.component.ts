@@ -346,7 +346,18 @@ export class PostFormComponent implements OnInit {
               .then(() => {
                 return new Promise((resolve, reject) => {
                   let rid = this.group.rid;
-                  return this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?no_cache=1&rid=' + rid)
+                  return this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/groups?no_cache=1&rid=' + rid + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+                  .subscribe((data: any) => {
+                      resolve(data.results);
+                  },
+                  (err) => {
+                      console.log(err);
+                  });
+                });
+              })
+              .then(() => {
+                return new Promise((resolve, reject) => {
+                  this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/topics?no_cache=1&topic_bulletin_secret=' + this.topic.relationship.their_bulletin_secret + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
                   .subscribe((data: any) => {
                       resolve(data.results);
                   },
