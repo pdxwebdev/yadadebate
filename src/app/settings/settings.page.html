@@ -16,6 +16,7 @@
   <button ion-button secondary (click)="createKey()">Create</button>
   <button ion-button secondary (click)="signinCode()">Signin code</button>
   <button ion-button secondary (click)="importKey()">Import</button>
+  <button ion-button secondary (click)="createRootGroup()">Create root group</button>
   <ion-list>
     <ion-item button (click)="selectIdentity(key.username)" *ngFor="let key of keys">
       {{key.username}}

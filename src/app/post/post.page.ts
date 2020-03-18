@@ -65,7 +65,7 @@ export class PostPage implements OnInit {
         if (this.postCardListComponent) this.postCardListComponent.ngOnInit();
         if (this.params && this.params.id) {
           this.id = this.params.id.replace(/ /g, '+');
-          this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + this.id + '&bulletin_secret=' + this.bulletinSecretService.bulletin_secret)
+          this.ahttp.get(this.settingsService.remoteSettings.baseUrl + '/get-post?id=' + encodeURIComponent(this.id) + '&bulletin_secret=' + encodeURIComponent(this.bulletinSecretService.bulletin_secret))
           .subscribe((res: any) => {
             this.item = res.result;
             this.item.time = new Date(parseInt(this.item.time)*1000).toISOString().slice(0, 19).replace('T', ' ');

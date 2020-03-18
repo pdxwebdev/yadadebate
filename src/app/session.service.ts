@@ -72,7 +72,8 @@ export class SessionService {
   createUser() {
     return new Promise(async (resolve, reject) => {
         let alert = await this.alertCtrl.create({
-            header: 'Set username',
+            header: 'Welcome to Kintanti - Constructive discussions!',
+            message: ' You can upload images, music, and video with your posts, all hosted on Skynet! <br><br>Click the rules link in the top left for more information!<br><br>That is all, have fun!',
             inputs: [
             {
                 name: 'username',
@@ -80,14 +81,6 @@ export class SessionService {
             }
             ],
             buttons: [
-            {
-                text: 'Cancel',
-                role: 'cancel',
-                handler: data => {
-                    console.log('Cancel clicked');
-                    reject();
-                }
-            },
             {
                 text: 'Save',
                 handler: async data => {

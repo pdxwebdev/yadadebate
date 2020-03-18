@@ -30,6 +30,7 @@ export class PostFormComponent implements OnInit {
   fileData: any;
   fileName: any;
   fileType: any;
+  fileSkyLink: any;
   constructor(
     private settingsService: SettingsService,
     private bulletinSecretService: BulletinSecretService,
@@ -336,7 +337,7 @@ export class PostFormComponent implements OnInit {
                       requested_rid: this.group.requested_rid
                   }
                   if(this.fileName) {
-                    txn_data['relationship']['groupChatFileName'] = this.fileName;
+                    txn_data['relationship']['groupChatFileName'] = this.fileSkyLink;
                     txn_data['relationship']['groupChatFileType'] = this.fileType;
                   }
                   return this.transactionService.generateTransaction(txn_data);
@@ -419,7 +420,7 @@ export class PostFormComponent implements OnInit {
           this.fileType = ''; 
           fileInput.target.value = '';
         }
-        //this.uploadedFilePath = res.data.filePath;
+        this.fileSkyLink = res.skylink;
       })
   }
 

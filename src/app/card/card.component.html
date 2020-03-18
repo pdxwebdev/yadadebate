@@ -1,7 +1,7 @@
 <ion-card *ngIf="cardType == 'topic' && item.relationship" (click)="isolateCard($event)">
-    <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}">
-    <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></audio>
-    <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></video>
+  <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="https://siasky.net/{{item.relationship.groupChatFileName}}">
+  <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></audio>
+  <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></video>
   <ion-card-header>
     <ion-card-title>
       {{item.relationship.my_username || 'Anonymous'}} from 
@@ -36,9 +36,9 @@
   </ion-card-content>
 </ion-card>
 <ion-card *ngIf="cardType == 'group' && item.relationship" (click)="isolateCard($event)">
-    <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}">
-    <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></audio>
-    <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></video>
+    <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="https://siasky.net/{{item.relationship.groupChatFileName}}">
+    <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></audio>
+    <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></video>
   <ion-card-header>
     <ion-card-title>
         {{item.relationship.my_username || 'Anonymous'}} talking about 
@@ -73,9 +73,9 @@
   </ion-card-content>
 </ion-card>
 <ion-card *ngIf="cardType == 'replies' && item.relationship" (click)="isolateCard($event)">
-    <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}">
-    <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></audio>
-    <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="{{settingsService.remoteSettings.baseUrl}}/sia-files-stream?siapath={{item.relationship.groupChatFileName}}&mimetype={{item.relationship.groupChatFileType}}"></video>
+  <img *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'image'" src="https://siasky.net/{{item.relationship.groupChatFileName}}">
+  <audio controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'audio'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></audio>
+  <video controls *ngIf="item.relationship.groupChatFileType && item.relationship.groupChatFileType.substr(0, 5) === 'video'" src="https://siasky.net/{{item.relationship.groupChatFileName}}"></video>
   <ion-card-header>
     <ion-card-title>
         {{item.relationship.my_username || 'Anonymous'}} responded

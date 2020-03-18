@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Platform, ModalController } from '@ionic/angular';
+import { Platform, ModalController, AlertController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SettingsService } from './yadalib/settings.service';
@@ -45,7 +45,8 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    public settingsService: SettingsService
+    public settingsService: SettingsService,
+    public alertCtl: AlertController
   ) {
     this.initializeApp();
   }
@@ -55,5 +56,14 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+  }
+
+  async showRules($event) {
+    $event.preventDefault();
+    var alrt = await this.alertCtl.create({
+      header: 'Rules',
+      message: '1. All posts must contain a :group and a #topic so everyone knows which group you identify with for a given issue. <br> <br>2. Once you post or interact with a post for a given :group, you connot interact with other posts for that #topic outside of that :group. <br><br>Which :group will produce the best post for a given #topic?'
+    });
+    alrt.present();
   }
 }

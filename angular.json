@@ -49,8 +49,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/appvote/",
-              "deployUrl": "/appvotestatic/",
+              "baseHref": ".",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

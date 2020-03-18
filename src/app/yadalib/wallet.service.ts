@@ -53,6 +53,7 @@ export class WalletService {
                     if(data) {
                         this.walletError = false;
                         this.wallet = data;
+                        this.wallet.balance = parseFloat(this.wallet.balance);
                         this.wallet.balancePretty = this.wallet.balance.toFixed(2);
                         resolve(data);
                     } else {

@@ -1,7 +1,7 @@
 <ion-content class="ion-padding">
   <ion-note *ngIf="topic && group">I identify as a :{{group.relationship.their_username}} and I'm talking about #{{topic.relationship.their_username}}</ion-note>
   <textarea
-   placeholder="What's on your mind? 'I identify as a :turtle and I'm talking about #turtles and I think other turtles need to come out of their shell!''"
+   placeholder="What's on your mind? Your post must include a :group and a #topic. Example: 'I identify as a :turtle and I'm talking about #turtles and I think other turtles need to come out of their shell!'"
    [mentionConfig]="mentionConfig"
    (keyup)="change()"
    (searchTerm)="search($event)"

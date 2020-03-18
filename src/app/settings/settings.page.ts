@@ -14,6 +14,7 @@ import { FirebaseService } from '../yadalib/firebase.service';
 import { GraphService } from '../yadalib/graph.service';
 import { WalletService } from '../yadalib/wallet.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { GroupService } from '../group.service';
 
 
 
@@ -53,7 +54,8 @@ export class SettingsPage implements OnInit {
         public events: Events,
         public toastCtrl: ToastController,
         public peerService: PeerService,
-        private ahttp: HttpClient
+        private ahttp: HttpClient,
+        public groupService: GroupService
     ) {
         if (typeof this.peerService.mode == 'undefined') this.peerService.mode = false;
         this.refresh(null).catch((err) => {
@@ -461,5 +463,39 @@ export class SettingsPage implements OnInit {
         };
         
         return this.set(this.bulletinSecretService.keyname.substr(this.prefix.length));
+    }
+
+    async createRootGroup() {
+        let alert = await this.alertCtrl.create({
+            header: 'Set username',
+            inputs: [
+                {
+                    name: 'username',
+                    placeholder: 'Username'
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: data => {
+                        console.log('Cancel clicked');
+                    }
+                },
+                {
+                    text: 'Save',
+                    handler: async (data:any) => {
+                        var group = await this.groupService.createRootGroup(data.username);
+                        console.log(group);
+                        const toast = await this.toastCtrl.create({
+                            message: 'Root group created, check the console.',
+                            duration: 5000
+                        });
+                        await toast.present();
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 }

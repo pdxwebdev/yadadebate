@@ -112,12 +112,12 @@ export class CommunitiesPage implements OnInit {
                 var items = {};
                 for (let i = 0; i < promiseResults.length; i++) {
                     var promiseResult = promiseResults[i];
+                    if (!items[promiseResult.group['rid']]) items[promiseResult.group['rid']] = [];
                     for (let j = 0; j < promiseResult.data.length; j++) {
                         if(!promiseResult.data[j]['relationship']['their_username'] || 
                             promiseResult.data[j]['rid'] == promiseResult.data[j]['requested_rid'] ||
                             promiseResult.data[j]['relationship']['group'] !== true) 
                                 continue
-                        if (!items[promiseResult.group['rid']]) items[promiseResult.group['rid']] = [];
                         items[promiseResult.group['rid']].push({
                             group: promiseResult.group,
                             transaction: promiseResult.data[j]
